@@ -305,8 +305,8 @@
     <div class="nav-item active" onclick="switchView('tools',this)"><div class="nav-icon">🔧</div><div class="nav-label">Tools</div></div>
     <div class="nav-item" onclick="switchView('members',this)"><div class="nav-icon">👨‍👩‍👧‍👦</div><div class="nav-label">Familie</div></div>
     <div class="fab" onclick="openAddToolSheet()">＋</div>
-    <div class="nav-item" onclick="switchView('history',this)"><div class="nav-icon">📋</div><div class="nav-label">Geschiedening</div></div>
-    <div class="nav-item" onclick="switchView('settings',this)"><div class="nav-icon">⚙️</div><div class="nav-label">Instellingen</div></div>
+    <div class="nav-item" onclick="switchView('history',this)"><div class="nav-icon">📋</div><div class="nav-label">Recent</div></div>
+    <div class="nav-item" onclick="switchView('settings',this)"><div class="nav-icon">⚙️</div><div class="nav-label">Settings</div></div>
   </div>
 </div>
 
@@ -330,10 +330,10 @@
       </div>
       <input type="file" id="photoInput" accept="image/*" capture="environment" onchange="handlePhoto(event)">
     </div>
-    <div class="form-group"><label class="form-label">Tool Naam</label><input class="form-input" id="toolNameInput" placeholder="e.g. Bosch Drill"></div>
+    <div class="form-group"><label class="form-label">Tool Naam</label><input class="form-input" id="toolNameInput" placeholder="e.g. Afkortzaag"></div>
     <div class="form-group"><label class="form-label">Categorie</label><select class="form-select" id="toolCatInput"></select></div>
     <div class="form-group"><label class="form-label">Emoji (indien geen foto)</label><div class="tag-list" id="emojiPicker"></div></div>
-    <div class="form-group"><label class="form-label">Notities</label><textarea class="form-textarea" id="toolNotesInput" placeholder="Brand, model, special instructions…"></textarea></div>
+    <div class="form-group"><label class="form-label">Notities</label><textarea class="form-textarea" id="toolNotesInput" placeholder="Merk, model, speciale instructies…"></textarea></div>
     <button class="btn btn-primary" onclick="saveTool()">Tool Opslaan</button>
     <button class="btn btn-danger" id="deleteToolBtn" style="display:none" onclick="deleteTool()">Tool Verwijderen</button>
     <div style="height:8px"></div>
@@ -385,8 +385,8 @@
   <div class="sheet-handle"></div>
   <div class="sheet-header"><div class="sheet-title">Categorie Toevoegen</div></div>
   <div class="sheet-body">
-    <div class="form-group"><label class="form-label">Categorie Naam</label><input class="form-input" id="catNameInput" placeholder="e.g. Plumbing"></div>
-    <div class="form-group"><label class="form-label">Icoon</label><div class="tag-list" id="catEmojiPicker"></div></div>
+    <div class="form-group"><label class="form-label">Categorie Naam</label><input class="form-input" id="catNameInput" placeholder="bv. Kleding"></div>
+    <div class="form-group"><label class="form-label">Emoji</label><div class="tag-list" id="catEmojiPicker"></div></div>
     <button class="btn btn-primary" onclick="saveCategory()">Categorie Toevoegen</button>
   </div>
 </div>
@@ -571,7 +571,7 @@ function toolCard(tool) {
 window.openAddToolSheet = function() {
   if (!db) { showToast('⚠️ Nog niet verbonden'); return; }
   editingToolId=null; photoData=null; selectedEmoji='🔧';
-  document.getElementById('sheetToolTitle').textContent='Add Tool';
+  document.getElementById('sheetToolTitle').textContent='Tool Toevoegen';
   document.getElementById('toolNameInput').value='';
   document.getElementById('toolNotesInput').value='';
   document.getElementById('photoPreview').style.display='none';
@@ -585,7 +585,7 @@ window.editCurrentTool = function() { openEditTool(detailToolId); };
 function openEditTool(id) {
   const t=DB.tools.find(x=>x.id===id); if (!t) return;
   editingToolId=id; photoData=t.photo||null; selectedEmoji=t.emoji||'🔧';
-  document.getElementById('sheetToolTitle').textContent='Edit Tool';
+  document.getElementById('sheetToolTitle').textContent='Tool Wijzigen';
   document.getElementById('toolNameInput').value=t.name;
   document.getElementById('toolNotesInput').value=t.notes||'';
   document.getElementById('deleteToolBtn').style.display='block';
@@ -683,7 +683,7 @@ function drawDetailSheet(t){
   document.getElementById('detailHero').innerHTML=t.photo?`<img src="${t.photo}">`:(t.emoji||'🔧');
   document.getElementById('detailName').textContent=t.name;
   document.getElementById('detailCat').textContent=cat?cat.icon+' '+cat.name:'';
-  document.getElementById('detailNotes').textContent=t.notes||'No notes.';
+  document.getElementById('detailNotes').textContent=t.notes||'Geen notities.';
 
   // member grid
   document.getElementById('detailMemberGrid').innerHTML=
@@ -793,7 +793,7 @@ function renderHistory(){
     el.innerHTML=`<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">Nog geen geschiedenis</div><div class="empty-text">Check out a tool to see activity</div></div>`;
     return;
   }
-  el.innerHTML=`<div class="section-title">Recent Activity</div>`+DB.history.map(h=>{
+  el.innerHTML=`<div class="section-title">Recente Activiteit</div>`+DB.history.map(h=>{
     const mem=DB.members.find(m=>m.id===h.who);
     return `<div class="history-item">
       <div class="history-icon">${h.action==='checked out'?'📤':'📥'}</div>
