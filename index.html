@@ -269,7 +269,7 @@
       </div>
       <div class="search-bar">
         <span class="search-icon">🔍</span>
-        <input type="text" placeholder="Search tools1…" id="searchInput" oninput="renderTools()">
+        <input type="text" placeholder="Tools zoeken…" id="searchInput" oninput="renderTools()">
       </div>
     </div>
     <div class="categories-scroll" id="categoryChips"></div>
@@ -281,7 +281,7 @@
   <div class="view" id="view-members">
     <div class="app-header">
       <div class="header-top">
-        <div class="app-logo">Members</div>
+        <div class="app-logo">Leden</div>
         <div class="icon-btn" onclick="openAddMemberSheet()">➕</div>
       </div>
     </div>
@@ -290,7 +290,7 @@
 
   <!-- VIEW: HISTORY -->
   <div class="view" id="view-history">
-    <div class="app-header"><div class="header-top"><div class="app-logo">History</div></div></div>
+    <div class="app-header"><div class="header-top"><div class="app-logo">Geschiedenis</div></div></div>
     <div class="tools-container" id="historyList"></div>
   </div>
 
@@ -303,10 +303,10 @@
   <!-- BOTTOM NAV -->
   <div class="bottom-nav">
     <div class="nav-item active" onclick="switchView('tools',this)"><div class="nav-icon">🔧</div><div class="nav-label">Tools</div></div>
-    <div class="nav-item" onclick="switchView('members',this)"><div class="nav-icon">👨‍👩‍👧‍👦</div><div class="nav-label">Family</div></div>
+    <div class="nav-item" onclick="switchView('members',this)"><div class="nav-icon">👨‍👩‍👧‍👦</div><div class="nav-label">Familie</div></div>
     <div class="fab" onclick="openAddToolSheet()">＋</div>
-    <div class="nav-item" onclick="switchView('history',this)"><div class="nav-icon">📋</div><div class="nav-label">History</div></div>
-    <div class="nav-item" onclick="switchView('settings',this)"><div class="nav-icon">⚙️</div><div class="nav-label">Settings</div></div>
+    <div class="nav-item" onclick="switchView('history',this)"><div class="nav-icon">📋</div><div class="nav-label">Geschiedening</div></div>
+    <div class="nav-item" onclick="switchView('settings',this)"><div class="nav-icon">⚙️</div><div class="nav-label">Instellingen</div></div>
   </div>
 </div>
 
@@ -318,14 +318,14 @@
   <div class="sheet-handle"></div>
   <div class="sheet-header">
     <div class="sheet-title" id="sheetToolTitle">Tool Toevoegen</div>
-    <div class="sheet-subtitle">Add a new tool to your family inventory</div>
+    <div class="sheet-subtitle">Voeg een nieuwe tool toe</div>
   </div>
   <div class="sheet-body">
     <div class="form-group">
       <label class="form-label">Foto</label>
       <div class="photo-upload" onclick="document.getElementById('photoInput').click()">
         <div class="photo-upload-icon">📸</div>
-        <div class="photo-upload-text">Tap to take or choose a photo</div>
+        <div class="photo-upload-text">Tik om een foto te kiezen of te nemen</div>
         <img id="photoPreview" style="display:none">
       </div>
       <input type="file" id="photoInput" accept="image/*" capture="environment" onchange="handlePhoto(event)">
@@ -334,8 +334,8 @@
     <div class="form-group"><label class="form-label">Categorie</label><select class="form-select" id="toolCatInput"></select></div>
     <div class="form-group"><label class="form-label">Emoji (indien geen foto)</label><div class="tag-list" id="emojiPicker"></div></div>
     <div class="form-group"><label class="form-label">Notities</label><textarea class="form-textarea" id="toolNotesInput" placeholder="Brand, model, special instructions…"></textarea></div>
-    <button class="btn btn-primary" onclick="saveTool()">Save Tool</button>
-    <button class="btn btn-danger" id="deleteToolBtn" style="display:none" onclick="deleteTool()">Delete Tool</button>
+    <button class="btn btn-primary" onclick="saveTool()">Tool Opslaan</button>
+    <button class="btn btn-danger" id="deleteToolBtn" style="display:none" onclick="deleteTool()">Tool Verwijderen</button>
     <div style="height:8px"></div>
   </div>
 </div>
@@ -353,16 +353,16 @@
       <div class="detail-cat-badge" id="detailCat"></div>
       <div class="detail-notes" id="detailNotes"></div>
       <div class="checkout-section">
-        <div class="checkout-title">📍 Who has this tool?</div>
+        <div class="checkout-title">📍 Wie heeft deze tool?</div>
         <div class="member-grid" id="detailMemberGrid"></div>
       </div>
       <div class="checkout-section">
-        <div class="checkout-title">📋 History</div>
+        <div class="checkout-title">📋 Geschiedenis</div>
         <div class="history-list" id="detailHistory"></div>
       </div>
       <div style="display:flex;gap:8px">
-        <button class="btn btn-ghost" style="flex:1" onclick="closeAllSheets()">Close</button>
-        <button class="btn btn-primary" style="flex:1" onclick="confirmCheckout()">Confirm</button>
+        <button class="btn btn-ghost" style="flex:1" onclick="closeAllSheets()">Sluiten</button>
+        <button class="btn btn-primary" style="flex:1" onclick="confirmCheckout()">Bevestigen</button>
       </div>
       <div style="height:8px"></div>
     </div>
@@ -372,22 +372,22 @@
 <!-- SHEET: ADD MEMBER -->
 <div class="sheet" id="sheetMember">
   <div class="sheet-handle"></div>
-  <div class="sheet-header"><div class="sheet-title">Add Family Member</div></div>
+  <div class="sheet-header"><div class="sheet-title">Lid Toevoegen</div></div>
   <div class="sheet-body">
-    <div class="form-group"><label class="form-label">Name</label><input class="form-input" id="memberNameInput" placeholder="e.g. Dad"></div>
-    <div class="form-group"><label class="form-label">Pick a color</label><div class="tag-list" id="colorPicker"></div></div>
-    <button class="btn btn-primary" onclick="saveMember()">Add Member</button>
+    <div class="form-group"><label class="form-label">Naam</label><input class="form-input" id="memberNameInput" placeholder="e.g. Dad"></div>
+    <div class="form-group"><label class="form-label">Kies een kleur</label><div class="tag-list" id="colorPicker"></div></div>
+    <button class="btn btn-primary" onclick="saveMember()">Lid Toevoegen</button>
   </div>
 </div>
 
 <!-- SHEET: ADD CATEGORY -->
 <div class="sheet" id="sheetCategory">
   <div class="sheet-handle"></div>
-  <div class="sheet-header"><div class="sheet-title">Add Category</div></div>
+  <div class="sheet-header"><div class="sheet-title">Categorie Toevoegen</div></div>
   <div class="sheet-body">
-    <div class="form-group"><label class="form-label">Category Name</label><input class="form-input" id="catNameInput" placeholder="e.g. Plumbing"></div>
-    <div class="form-group"><label class="form-label">Icon</label><div class="tag-list" id="catEmojiPicker"></div></div>
-    <button class="btn btn-primary" onclick="saveCategory()">Add Category</button>
+    <div class="form-group"><label class="form-label">Categorie Naam</label><input class="form-input" id="catNameInput" placeholder="e.g. Plumbing"></div>
+    <div class="form-group"><label class="form-label">Icoon</label><div class="tag-list" id="catEmojiPicker"></div></div>
+    <button class="btn btn-primary" onclick="saveCategory()">Categorie Toevoegen</button>
   </div>
 </div>
 
@@ -400,7 +400,7 @@ import {
 
 // ── CONSTANTS ─────────────────────────────────────────────
 const CFG_KEY = 'tooltrak_fb_cfg_v1';
-const EMOJIS = ['🔧','🔩','🪚','⚙️','🔨','🪛','⚡','🌿','🍽','✂️','🪣','🧰','💡','🔑','🏗️','🧲','📐','🪜','🌊','🪴','🔌'];
+const EMOJIS = ['🔧','🔩','🪚','⚙️','🔨','🪛','⚡','🌿','🍴','✂️','🪣','🧰','💡','🔑','🏗️','🧲','📐','🪜','🌊','🪴','🔌'];
 const COLORS  = ['#f0a500','#e05c2a','#2ecc71','#3498db','#9b59b6','#e74c3c','#1abc9c','#f39c12','#e91e63','#00bcd4'];
 const CAT_EMOJIS = ['📦','⚡','🌱','🏗️','🔧','🚗','🧹','💧','🔥','🛠️','🪟','🧰','🔌','🌡️','⛏️'];
 
@@ -455,7 +455,7 @@ function listenAll() {
   function tryReveal() {
     if (Object.values(loaded).every(Boolean)) {
       hideLoading();
-      setSyncStatus('green','Live ●');
+      setSyncStatus('green','Online ●');
     }
   }
 
@@ -490,8 +490,8 @@ function listenAll() {
 }
 
 async function seedCategories() {
-  await setDoc(doc(db,'categories','power'), {name:'Power Tools', icon:'⚡'});
-  await setDoc(doc(db,'categories','garden'), {name:'Garden', icon:'🌱'});
+  await setDoc(doc(db,'categories','power'), {name:'Gereedschap', icon:'⚡'});
+  await setDoc(doc(db,'categories','garden'), {name:'Tuin', icon:'🌱'});
 }
 
 function refreshActiveView(views) {
@@ -569,7 +569,7 @@ function toolCard(tool) {
 
 // ── ADD / EDIT TOOL ───────────────────────────────────────
 window.openAddToolSheet = function() {
-  if (!db) { showToast('⚠️ Not connected yet'); return; }
+  if (!db) { showToast('⚠️ Nog niet verbonden'); return; }
   editingToolId=null; photoData=null; selectedEmoji='🔧';
   document.getElementById('sheetToolTitle').textContent='Add Tool';
   document.getElementById('toolNameInput').value='';
@@ -635,7 +635,7 @@ window.handlePhoto=function(ev){
 
 window.saveTool=async function(){
   const name=document.getElementById('toolNameInput').value.trim();
-  if(!name){showToast('⚠️ Enter a tool name');return;}
+  if(!name){showToast('⚠️ Voer een naam in');return;}
   const data={
     name,
     category:document.getElementById('toolCatInput').value,
@@ -645,21 +645,21 @@ window.saveTool=async function(){
     updatedAt:Date.now()
   };
   try{
-    setSyncStatus('yellow','Saving…');
+    setSyncStatus('yellow','Opslaan…');
     if(editingToolId){
       await setDoc(doc(db,'tools',editingToolId),data,{merge:true});
-      showToast('✅ Tool updated');
+      showToast('✅ Tool geüpdated');
     } else {
       await addDoc(collection(db,'tools'),{...data,holder:null,history:[],createdAt:Date.now()});
-      showToast('✅ Tool added!');
+      showToast('✅ Tool toegevoegd!');
     }
     closeAllSheets();
   }catch(e){showToast('❌ '+e.message);setSyncStatus('red','Error');}
 };
 
 window.deleteTool=async function(){
-  if(!editingToolId||!confirm('Delete this tool?'))return;
-  try{await deleteDoc(doc(db,'tools',editingToolId));closeAllSheets();showToast('🗑️ Deleted');}
+  if(!editingToolId||!confirm('Deze tool verwijderen?'))return;
+  try{await deleteDoc(doc(db,'tools',editingToolId));closeAllSheets();showToast('🗑️ Verwijderd');}
   catch(e){showToast('❌ '+e.message);}
 };
 
@@ -709,7 +709,7 @@ function drawDetailSheet(t){
         <div class="history-date">${fmtDate(h.date)}</div>
       </div>
     </div>`;
-  }).join(''):'<div style="color:var(--text3);font-size:13px">No history yet</div>';
+  }).join(''):'<div style="color:var(--text3);font-size:13px">Nog geen gescbiedenis</div>';
 }
 
 window.selectMember=function(id){
@@ -728,7 +728,7 @@ window.confirmCheckout=async function(){
   const entry={who,action,date:Date.now()};
   const newHist=[...(t.history||[]),entry];
   try{
-    setSyncStatus('yellow','Saving…');
+    setSyncStatus('yellow','Opslaan…');
     await setDoc(doc(db,'tools',detailToolId),{holder:detailSelectedMember,history:newHist},{merge:true});
     await addDoc(collection(db,'history'),{toolId:detailToolId,toolName:t.name,...entry});
     const mem=DB.members.find(m=>m.id===who);
@@ -741,7 +741,7 @@ window.confirmCheckout=async function(){
 function renderMembers(){
   const el=document.getElementById('membersList');
   if(!DB.members.length){
-    el.innerHTML=`<div class="empty-state"><div class="empty-icon">👨‍👩‍👧‍👦</div><div class="empty-title">No members yet</div><div class="empty-text">Tap ➕ to add family members</div></div>`;
+    el.innerHTML=`<div class="empty-state"><div class="empty-icon">👨‍👩‍👧‍👦</div><div class="empty-title">Nog geen leden</div><div class="empty-text">Tik ➕ om lid toe te voegen</div></div>`;
     return;
   }
   el.innerHTML=`<div class="members-grid">`+DB.members.map(m=>{
@@ -770,15 +770,15 @@ window.pickColor=function(c){selectedColor=c;renderColorPicker();};
 
 window.saveMember=async function(){
   const name=document.getElementById('memberNameInput').value.trim();
-  if(!name){showToast('⚠️ Enter a name');return;}
-  try{await addDoc(collection(db,'members'),{name,color:selectedColor});closeAllSheets();showToast('✅ '+name+' added!');}
+  if(!name){showToast('⚠️ Voer een naam in');return;}
+  try{await addDoc(collection(db,'members'),{name,color:selectedColor});closeAllSheets();showToast('✅ '+name+' toegevoegd!');}
   catch(e){showToast('❌ '+e.message);}
 };
 
 window.showMemberTools=function(mid){
   const m=DB.members.find(x=>x.id===mid);
   const tools=DB.tools.filter(t=>t.holder===mid);
-  if(!tools.length){showToast(`${m.name} has no tools`);return;}
+  if(!tools.length){showToast(`${m.name} heeft geen tools`);return;}
   selectedCategory='all'; document.getElementById('searchInput').value='';
   switchView('tools',document.querySelector('.nav-item'));
   renderCatChips(); renderStats();
@@ -790,7 +790,7 @@ window.showMemberTools=function(mid){
 function renderHistory(){
   const el=document.getElementById('historyList');
   if(!DB.history.length){
-    el.innerHTML=`<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">No history yet</div><div class="empty-text">Check out a tool to see activity</div></div>`;
+    el.innerHTML=`<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">Nog geen geschiedenis</div><div class="empty-text">Check out a tool to see activity</div></div>`;
     return;
   }
   el.innerHTML=`<div class="section-title">Recent Activity</div>`+DB.history.map(h=>{
@@ -809,38 +809,38 @@ function renderHistory(){
 function renderSettings(){
   document.getElementById('settingsList').innerHTML=`
     <div class="settings-section">
-      <div class="settings-section-title">Categories</div>
+      <div class="settings-section-title">Categorieën</div>
       ${DB.categories.map(c=>`
         <div class="cat-manage-item">
           <div class="cat-icon">${c.icon}</div>
           <div class="cat-name">${c.name}</div>
           <button class="cat-delete-btn" onclick="deleteCategory('${c.id}')">✕</button>
         </div>`).join('')}
-      <div style="margin-top:10px"><button class="btn btn-ghost" onclick="openAddCategorySheet()">＋ Add Category</button></div>
+      <div style="margin-top:10px"><button class="btn btn-ghost" onclick="openAddCategorySheet()">＋ Categorie Toevoegen</button></div>
     </div>
     <div class="settings-section">
-      <div class="settings-section-title">Data</div>
+      <div class="settings-section-title">Data (alleen voor Maarten)</div>
       <div class="settings-row" onclick="exportData()">
         <div class="settings-row-left"><div class="settings-row-icon">💾</div><div class="settings-row-text">Export backup (JSON)</div></div>
         <div class="settings-row-chevron">›</div>
       </div>
       <div class="settings-row" onclick="doClearHistory()">
-        <div class="settings-row-left"><div class="settings-row-icon">🗑️</div><div class="settings-row-text">Clear activity history</div></div>
+        <div class="settings-row-left"><div class="settings-row-icon">🗑️</div><div class="settings-row-text">Geschiedenis wissen (niet doen)</div></div>
         <div class="settings-row-chevron">›</div>
       </div>
       <div class="settings-row" onclick="resetCfg()">
-        <div class="settings-row-left"><div class="settings-row-icon">🔥</div><div class="settings-row-text">Change Firebase config</div></div>
+        <div class="settings-row-left"><div class="settings-row-icon">🔥</div><div class="settings-row-text">Firebase config wijzigen (niet doen)</div></div>
         <div class="settings-row-chevron">›</div>
       </div>
     </div>
     <div class="settings-section">
       <div class="settings-section-title">Install on phone</div>
-      <div class="settings-row"><div class="settings-row-left"><div class="settings-row-icon">🍎</div><div class="settings-row-text">iPhone: tap Share → "Add to Home Screen"</div></div></div>
-      <div class="settings-row"><div class="settings-row-left"><div class="settings-row-icon">🤖</div><div class="settings-row-text">Android: tap ⋮ → "Add to Home Screen"</div></div></div>
+      <div class="settings-row"><div class="settings-row-left"><div class="settings-row-icon">🍎</div><div class="settings-row-text">iPhone: tik Share → "Aan beginscherm toevoegen"</div></div></div>
+      <div class="settings-row"><div class="settings-row-left"><div class="settings-row-icon">🤖</div><div class="settings-row-text">Android: tik ⋮ → "Toevoegen aan beginscherm"</div></div></div>
     </div>
     <div class="settings-section">
       <div class="settings-section-title">About</div>
-      <div class="settings-row"><div class="settings-row-left"><div class="settings-row-icon">ℹ️</div><div class="settings-row-text">ToolTrak v2.0 — Real-time Firebase sync</div></div></div>
+      <div class="settings-row"><div class="settings-row-left"><div class="settings-row-icon">ℹ️</div><div class="settings-row-text">ToolTrak v1.1 - Supervet!</div></div></div>
     </div>`;
 }
 
@@ -851,14 +851,14 @@ window.openAddCategorySheet=function(){
 };
 window.saveCategory=async function(){
   const name=document.getElementById('catNameInput').value.trim();
-  if(!name){showToast('⚠️ Enter a name');return;}
+  if(!name){showToast('⚠️ Voer een naam in');return;}
   const id=name.toLowerCase().replace(/\s+/g,'_')+'_'+Date.now();
-  try{await setDoc(doc(db,'categories',id),{name,icon:selectedCatEmoji});closeAllSheets();showToast('✅ Category added');}
+  try{await setDoc(doc(db,'categories',id),{name,icon:selectedCatEmoji});closeAllSheets();showToast('✅ Categorie toegevoegd');}
   catch(e){showToast('❌ '+e.message);}
 };
 window.deleteCategory=async function(id){
-  if(DB.tools.some(t=>t.category===id)){showToast('⚠️ Reassign tools first');return;}
-  try{await deleteDoc(doc(db,'categories',id));showToast('🗑️ Category removed');}
+  if(DB.tools.some(t=>t.category===id)){showToast('⚠️ Categorie is nog toegekend aan een tool');return;}
+  try{await deleteDoc(doc(db,'categories',id));showToast('🗑️ Categorie verwijderd');}
   catch(e){showToast('❌ '+e.message);}
 };
 window.exportData=function(){
@@ -868,16 +868,16 @@ window.exportData=function(){
   showToast('💾 Exported!');
 };
 window.doClearHistory=async function(){
-  if(!confirm('Clear all activity history?'))return;
+  if(!confirm('Verwijder alle geschiedenis?'))return;
   try{
     const batch=writeBatch(db);
     (await getDocs(collection(db,'history'))).forEach(d=>batch.delete(d.ref));
     await batch.commit();
-    showToast('🗑️ History cleared');
+    showToast('🗑️ Geschiedenis verwijderd');
   }catch(e){showToast('❌ '+e.message);}
 };
 window.resetCfg=function(){
-  if(!confirm('Reset Firebase config? The app will reload.'))return;
+  if(!confirm('Reset Firebase config? Dit verwijdert je connectie!'))return;
   localStorage.removeItem(CFG_KEY); location.reload();
 };
 
