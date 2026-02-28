@@ -317,12 +317,12 @@
 <div class="sheet" id="sheetTool">
   <div class="sheet-handle"></div>
   <div class="sheet-header">
-    <div class="sheet-title" id="sheetToolTitle">Add Tool</div>
+    <div class="sheet-title" id="sheetToolTitle">Tool Toevoegen</div>
     <div class="sheet-subtitle">Add a new tool to your family inventory</div>
   </div>
   <div class="sheet-body">
     <div class="form-group">
-      <label class="form-label">Photo</label>
+      <label class="form-label">Foto</label>
       <div class="photo-upload" onclick="document.getElementById('photoInput').click()">
         <div class="photo-upload-icon">📸</div>
         <div class="photo-upload-text">Tap to take or choose a photo</div>
@@ -330,10 +330,10 @@
       </div>
       <input type="file" id="photoInput" accept="image/*" capture="environment" onchange="handlePhoto(event)">
     </div>
-    <div class="form-group"><label class="form-label">Tool Name</label><input class="form-input" id="toolNameInput" placeholder="e.g. Bosch Drill"></div>
-    <div class="form-group"><label class="form-label">Category</label><select class="form-select" id="toolCatInput"></select></div>
-    <div class="form-group"><label class="form-label">Emoji Icon (if no photo)</label><div class="tag-list" id="emojiPicker"></div></div>
-    <div class="form-group"><label class="form-label">Notes</label><textarea class="form-textarea" id="toolNotesInput" placeholder="Brand, model, special instructions…"></textarea></div>
+    <div class="form-group"><label class="form-label">Tool Naam</label><input class="form-input" id="toolNameInput" placeholder="e.g. Bosch Drill"></div>
+    <div class="form-group"><label class="form-label">Categorie</label><select class="form-select" id="toolCatInput"></select></div>
+    <div class="form-group"><label class="form-label">Emoji (indien geen foto)</label><div class="tag-list" id="emojiPicker"></div></div>
+    <div class="form-group"><label class="form-label">Notities</label><textarea class="form-textarea" id="toolNotesInput" placeholder="Brand, model, special instructions…"></textarea></div>
     <button class="btn btn-primary" onclick="saveTool()">Save Tool</button>
     <button class="btn btn-danger" id="deleteToolBtn" style="display:none" onclick="deleteTool()">Delete Tool</button>
     <div style="height:8px"></div>
