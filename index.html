@@ -578,7 +578,7 @@ function connectFirebase(cfg){
 
 function listenAll(){
   const loaded={tools:false,members:false,categories:false,history:false};
-  function tryReveal(){if(Object.values(loaded).every(Boolean)){hideLoading();setSyncStatus('green','Online');}}
+  function tryReveal(){if(Object.values(loaded).every(Boolean)){hideLoading();setSyncStatus('green','Verbonden');}}
   onSnapshot(collection(db,'tools'),snap=>{DB.tools=snap.docs.map(d=>({id:d.id,...d.data()}));loaded.tools=true;tryReveal();refreshActive(['tools','members']);if(detailToolId)refreshDetailIfOpen();});
   onSnapshot(collection(db,'members'),snap=>{DB.members=snap.docs.map(d=>({id:d.id,...d.data()}));loaded.members=true;tryReveal();refreshActive(['tools','members']);});
   onSnapshot(collection(db,'categories'),snap=>{DB.categories=snap.docs.map(d=>({id:d.id,...d.data()}));if(!DB.categories.length)seedCats();loaded.categories=true;tryReveal();refreshActive(['tools','settings']);});
@@ -1080,10 +1080,10 @@ window.showMemberTools=function(mid){
 // ── LOGBOEK ───────────────────────────────────────────────
 function renderHistory(){
   const el=document.getElementById('historyList');
-  if(!DB.history.length){el.innerHTML=`<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">Nog geen activiteit</div><div class="empty-text">Check een tool uit om de geschiedenis te starten</div></div>`;return;}
+  if(!DB.history.length){el.innerHTML=`<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">Nog geen activiteit</div><div class="empty-text">Creëer een tool om de geschiedenis te starten</div></div>`;return;}
   el.innerHTML=`<div class="section-title">Recente activiteit</div>`+DB.history.map(h=>{
     const mem=DB.members.find(m=>m.id===h.who);
-    return`<div class="history-item"><div class="history-icon">${h.action==='checked out'?'➡️':'⬅️'}</div><div class="history-text"><div class="history-action"><strong>${h.toolName}</strong> — naar ${mem?mem.name:'Onbekend'} ${h.action==='checked out'?'':''}</div><div class="history-date">${fmtDate(h.date)}</div></div></div>`;
+    return`<div class="history-item"><div class="history-icon">${h.action==='checked out'?'➡️':'⬅️'}</div><div class="history-text"><div class="history-action"><strong>${h.toolName}</strong> - naar ${mem?mem.name:'Onbekend'} ${h.action==='checked out'?'':''}</div><div class="history-date">${fmtDate(h.date)}</div></div></div>`;
   }).join('');
 }
 
@@ -1124,7 +1124,7 @@ function renderSettings(){
     </div>
     <div class="settings-section">
       <div class="settings-section-title">Over</div>
-      <div class="settings-row"><div class="settings-row-left"><div class="settings-row-icon">ℹ️</div><div class="settings-row-text">WieBewaartWat v2.1 - Saarloosjes</div></div></div>
+      <div class="settings-row"><div class="settings-row-left"><div class="settings-row-icon">ℹ️</div><div class="settings-row-text">WieBewaartWat v2.2 - Saarloosjes</div></div></div>
     </div>`;
 }
 window.toggleDataSec=function(){
