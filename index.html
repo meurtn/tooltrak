@@ -1,366 +1,437 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="ToolTrak">
-<meta name="theme-color" content="#1a1a2e">
-<title>ToolTrak — Family Tool Tracker</title>
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="WieBewaarWat">
+<meta name="theme-color" content="#f5f6fa" id="themeColor">
+<title>WieBewaarWat</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Nunito+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg:#0f0f1a;--bg2:#16162a;--bg3:#1e1e35;
-    --border:rgba(255,255,255,0.07);
-    --accent:#f0a500;--accent2:#e05c2a;
-    --text:#f0ede8;--text2:#9490a0;--text3:#6a6678;
-    --green:#2ecc71;--red:#e74c3c;
-    --radius:16px;--radius-sm:10px;
-  }
-  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-  html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;overflow:hidden}
 
-  /* ── SETUP SCREEN ── */
-  #setupScreen{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:48px 20px 32px;z-index:999;overflow-y:auto;gap:0}
-  #setupScreen.hidden{display:none}
-  .setup-logo{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;margin-bottom:6px}
-  .setup-logo span{color:var(--accent)}
-  .setup-tagline{color:var(--text3);font-size:13px;margin-bottom:28px;text-align:center}
-  .setup-card{width:100%;max-width:420px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:22px;margin-bottom:14px}
-  .setup-card-title{font-family:'Syne',sans-serif;font-weight:700;font-size:16px;margin-bottom:6px}
-  .setup-card-sub{font-size:13px;color:var(--text3);margin-bottom:16px;line-height:1.55}
-  .setup-steps{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
-  .setup-step{display:flex;gap:12px;align-items:flex-start}
-  .step-num{width:22px;height:22px;border-radius:50%;background:var(--accent);color:#000;font-family:'Syne',sans-serif;font-weight:800;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
-  .step-text{font-size:13px;color:var(--text2);line-height:1.55}
-  .step-text a{color:var(--accent);text-decoration:none}
-  .step-text code{background:var(--bg3);padding:1px 6px;border-radius:4px;font-size:12px}
-  .setup-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px 13px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;margin-bottom:8px;transition:border-color .2s}
-  .setup-input:focus{border-color:var(--accent)}
-  .setup-input::placeholder{color:var(--text3);font-size:12px}
-  .setup-btn{width:100%;padding:14px;border-radius:var(--radius-sm);border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;cursor:pointer;transition:opacity .2s}
-  .setup-btn:active{opacity:.85}
-  .setup-note{font-size:11px;color:var(--text3);text-align:center;max-width:320px;line-height:1.65}
+/* ═══════════════════════════════════════════════════════════
+   KLEURVARIABELEN — pas hier de kleuren aan per modus
+   ═══════════════════════════════════════════════════════════
 
-  /* ── LOADING ── */
-  .loading-overlay{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:900;transition:opacity .4s}
-  .loading-overlay.hidden{opacity:0;pointer-events:none}
-  .spinner{width:34px;height:34px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite}
-  @keyframes spin{to{transform:rotate(360deg)}}
-  .loading-text{font-size:13px;color:var(--text3)}
+   LIGHT MODE — standaard actief
+   Verander hieronder de waarden om de lichte stijl aan te passen.
+   ─────────────────────────────────────────────────────────── */
+:root {
+  --bg:          #f5f6fa;          /* pagina-achtergrond */
+  --bg2:         #ffffff;          /* kaarten */
+  --bg3:         #eceef5;          /* invoervelden, chips */
+  --bg4:         #dde0ec;          /* randen, scheidingslijnen */
+  --border:      rgba(0,0,0,0.07);
 
-  /* ── APP SHELL ── */
-  #app{display:flex;flex-direction:column;height:100dvh;max-width:480px;margin:0 auto;position:relative;overflow:hidden}
-  .app-header{padding:52px 20px 16px;background:linear-gradient(180deg,var(--bg) 0%,transparent 100%);position:relative;z-index:10;flex-shrink:0}
-  .header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
-  .app-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;letter-spacing:-.5px}
-  .app-logo span{color:var(--accent)}
-  .header-actions{display:flex;gap:8px;align-items:center}
-  .icon-btn{width:40px;height:40px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;font-size:18px}
-  .icon-btn:active{transform:scale(.92);background:var(--accent);color:#000}
-  .sync-badge{display:flex;align-items:center;font-size:11px;color:var(--text3);background:var(--bg3);border:1px solid var(--border);border-radius:100px;padding:4px 10px;gap:5px}
-  .sync-dot{width:7px;height:7px;border-radius:50%}
-  .sync-dot.green{background:var(--green);box-shadow:0 0 5px var(--green)}
-  .sync-dot.yellow{background:var(--accent);animation:blink 1s infinite}
-  .sync-dot.red{background:var(--red)}
-  @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+  --accent:      #3d6af3;          /* primair blauw: knoppen, actieve chips */
+  --accent-lt:   #5c83f5;          /* iets lichter blauw */
+  --accent-bg:   rgba(61,106,243,0.09);  /* subtiele blauwe achtergrond */
 
-  .search-bar{position:relative}
-  .search-bar input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:12px 16px 12px 42px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color .2s}
-  .search-bar input:focus{border-color:var(--accent)}
-  .search-bar input::placeholder{color:var(--text3)}
-  .search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:16px}
+  --text:        #1b2044;          /* hoofdtekst */
+  --text2:       #5c6585;          /* secundaire tekst */
+  --text3:       #9399b8;          /* labels, placeholders */
 
-  .categories-scroll{display:flex;gap:8px;padding:16px 20px 0;overflow-x:auto;scrollbar-width:none;flex-shrink:0}
-  .categories-scroll::-webkit-scrollbar{display:none}
-  .cat-chip{flex-shrink:0;padding:7px 16px;border-radius:100px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;white-space:nowrap}
-  .cat-chip.active{background:var(--accent);border-color:var(--accent);color:#000;font-weight:700}
-  .cat-chip:active{transform:scale(.95)}
+  --green:       #1e9e60;
+  --green-bg:    rgba(30,158,96,0.10);
+  --red:         #d93025;
+  --red-bg:      rgba(217,48,37,0.10);
 
-  .stats-bar{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:16px 20px 0;flex-shrink:0}
-  .stat-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;text-align:center}
-  .stat-num{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--accent)}
-  .stat-label{font-size:11px;color:var(--text3);margin-top:2px}
+  --shadow:      0 1px 8px rgba(61,106,243,0.08);
+  --shadow-md:   0 4px 20px rgba(61,106,243,0.12);
+  --nav-bg:      rgba(245,246,250,0.96);
+  --radius:      16px;
+  --radius-sm:   10px;
+}
 
-  .tools-container{flex:1;overflow-y:auto;padding:16px 20px 100px;scrollbar-width:none}
-  .tools-container::-webkit-scrollbar{display:none}
-  .section-title{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);margin-bottom:12px;margin-top:4px}
+/* ═══════════════════════════════════════════════════════════
+   DARK MODE
+   Verander hieronder de waarden om de donkere stijl aan te passen.
+   ─────────────────────────────────────────────────────────── */
+body.dark-mode {
+  --bg:          #0d1021;
+  --bg2:         #141728;
+  --bg3:         #1b1f35;
+  --bg4:         #252a42;
+  --border:      rgba(255,255,255,0.07);
 
-  .tool-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:10px;display:flex;gap:14px;align-items:center;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
-  .tool-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;opacity:0;transition:opacity .2s}
-  .tool-card:active{transform:scale(.98)}
-  .tool-card.checked-out::before{opacity:1;background:var(--accent2)}
-  .tool-card.available::before{opacity:1;background:var(--green)}
-  .tool-photo{width:56px;height:56px;border-radius:12px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;overflow:hidden;border:1px solid var(--border)}
-  .tool-photo img{width:100%;height:100%;object-fit:cover}
-  .tool-info{flex:1;min-width:0}
-  .tool-name{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .tool-cat{font-size:12px;color:var(--text3);margin-bottom:6px}
-  .tool-status{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;padding:3px 10px;border-radius:100px}
-  .tool-status.available{background:rgba(46,204,113,.15);color:var(--green)}
-  .tool-status.checked-out{background:rgba(240,165,0,.15);color:var(--accent)}
-  .status-dot{width:6px;height:6px;border-radius:50%;background:currentColor}
-  .tool-member{text-align:right;flex-shrink:0}
-  .member-avatar{width:36px;height:36px;border-radius:50%;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;font-family:'Syne',sans-serif;margin:0 auto 4px;border:2px solid var(--border)}
-  .member-name-small{font-size:10px;color:var(--text3);text-align:center}
+  --accent:      #5577ff;
+  --accent-lt:   #7090ff;
+  --accent-bg:   rgba(85,119,255,0.12);
 
-  .bottom-nav{position:absolute;bottom:0;left:0;right:0;background:rgba(15,15,26,.92);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-around;padding:8px 0 28px;z-index:20}
-  .nav-item{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 20px;cursor:pointer;transition:all .2s}
-  .nav-icon{font-size:22px;transition:transform .2s}
-  .nav-label{font-size:10px;font-weight:500;color:var(--text3);transition:color .2s}
-  .nav-item.active .nav-label{color:var(--accent)}
-  .nav-item.active .nav-icon{transform:translateY(-2px)}
-  .nav-item:active{transform:scale(.9)}
-  .fab{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:26px;color:#fff;cursor:pointer;box-shadow:0 4px 20px rgba(240,165,0,.4);transition:all .2s;margin-top:-20px;line-height:1}
-  .fab:active{transform:scale(.9)}
+  --text:        #e4e8f8;
+  --text2:       #8890b8;
+  --text3:       #555e88;
 
-  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:50;display:none;opacity:0;transition:opacity .3s}
-  .overlay.open{display:block;opacity:1}
-  .sheet{position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(100%);width:100%;max-width:480px;background:var(--bg2);border-radius:24px 24px 0 0;z-index:100;transition:transform .35s cubic-bezier(.32,.72,0,1);max-height:90dvh;display:flex;flex-direction:column}
-  .sheet.open{transform:translateX(-50%) translateY(0)}
-  .sheet-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 0;flex-shrink:0}
-  .sheet-header{padding:16px 20px 0;flex-shrink:0}
-  .sheet-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:700}
-  .sheet-subtitle{font-size:13px;color:var(--text3);margin-top:4px}
-  .sheet-body{padding:20px;overflow-y:auto;flex:1;scrollbar-width:none}
-  .sheet-body::-webkit-scrollbar{display:none}
+  --green:       #27c270;
+  --green-bg:    rgba(39,194,112,0.12);
+  --red:         #f04040;
+  --red-bg:      rgba(240,64,64,0.12);
 
-  .form-group{margin-bottom:18px}
-  .form-label{display:block;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:8px}
-  .form-input,.form-select,.form-textarea{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:13px 16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;outline:none;transition:border-color .2s;-webkit-appearance:none}
-  .form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--accent)}
-  .form-textarea{resize:none;min-height:80px}
-  .photo-upload{width:100%;aspect-ratio:16/9;background:var(--bg3);border:2px dashed var(--border);border-radius:var(--radius);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:border-color .2s;overflow:hidden;position:relative}
-  .photo-upload:active{border-color:var(--accent)}
-  .photo-upload img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
-  .photo-upload-icon{font-size:32px}
-  .photo-upload-text{font-size:13px;color:var(--text3)}
-  #photoInput{display:none}
+  --shadow:      0 1px 8px rgba(0,0,0,0.3);
+  --shadow-md:   0 4px 20px rgba(0,0,0,0.4);
+  --nav-bg:      rgba(13,16,33,0.97);
+}
+/* ═══════════════════════════════════════════════════════════ */
 
-  .btn{width:100%;padding:16px;border-radius:var(--radius-sm);border:none;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:.5px}
-  .btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 4px 16px rgba(240,165,0,.3)}
-  .btn-primary:active{transform:scale(.98)}
-  .btn-danger{background:var(--red);color:#fff;margin-top:10px}
-  .btn-ghost{background:var(--bg3);color:var(--text2);border:1px solid var(--border)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Nunito Sans',sans-serif;font-size:15px;overflow:hidden;transition:background .25s,color .25s}
 
-  .detail-hero{width:100%;aspect-ratio:4/3;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:72px;border-radius:var(--radius) var(--radius) 0 0;overflow:hidden;flex-shrink:0}
-  .detail-hero img{width:100%;height:100%;object-fit:cover}
-  .detail-content{padding:20px}
-  .detail-name{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;margin-bottom:4px}
-  .detail-cat-badge{display:inline-block;background:var(--bg3);border:1px solid var(--border);border-radius:100px;padding:4px 12px;font-size:12px;color:var(--text2);margin-bottom:16px}
-  .detail-notes{font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:20px}
-  .checkout-section{background:var(--bg3);border-radius:var(--radius);padding:16px;margin-bottom:16px}
-  .checkout-title{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:12px}
-  .member-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:8px}
-  .member-option{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 6px;border-radius:var(--radius-sm);background:var(--bg2);border:2px solid transparent;cursor:pointer;transition:all .2s}
-  .member-option.selected{border-color:var(--accent);background:rgba(240,165,0,.1)}
-  .member-option:active{transform:scale(.95)}
-  .member-avatar-lg{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;font-family:'Syne',sans-serif}
-  .member-name-opt{font-size:11px;color:var(--text2);text-align:center}
+/* ── SETUP ── */
+#setupScreen{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:52px 20px 32px;z-index:999;overflow-y:auto}
+#setupScreen.hidden{display:none}
+.setup-logo{font-family:'Nunito',sans-serif;font-size:28px;font-weight:900;color:var(--text);margin-bottom:4px}
+.setup-logo span{color:var(--accent)}
+.setup-tagline{color:var(--text3);font-size:13px;margin-bottom:26px;text-align:center}
+.setup-card{width:100%;max-width:420px;background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:14px;box-shadow:var(--shadow-md)}
+.setup-card-title{font-family:'Nunito',sans-serif;font-weight:800;font-size:15px;margin-bottom:5px}
+.setup-card-sub{font-size:13px;color:var(--text2);margin-bottom:14px;line-height:1.55}
+.setup-steps{display:flex;flex-direction:column;gap:10px;margin-bottom:18px}
+.setup-step{display:flex;gap:11px;align-items:flex-start}
+.step-num{width:21px;height:21px;border-radius:50%;background:var(--accent);color:#fff;font-family:'Nunito',sans-serif;font-weight:900;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.step-text{font-size:13px;color:var(--text2);line-height:1.55}
+.step-text a{color:var(--accent);text-decoration:none}
+.step-text code{background:var(--bg3);padding:1px 5px;border-radius:4px;font-size:12px}
+.setup-input{width:100%;background:var(--bg3);border:1.5px solid transparent;border-radius:var(--radius-sm);padding:11px 13px;color:var(--text);font-family:'Nunito Sans',sans-serif;font-size:13px;outline:none;margin-bottom:7px;transition:border-color .2s}
+.setup-input:focus{border-color:var(--accent)}
+.setup-input::placeholder{color:var(--text3);font-size:12px}
+.setup-btn{width:100%;padding:13px;border-radius:var(--radius-sm);border:none;background:var(--accent);color:#fff;font-family:'Nunito',sans-serif;font-weight:800;font-size:15px;cursor:pointer;transition:opacity .2s,transform .1s}
+.setup-btn:active{opacity:.87;transform:scale(.98)}
+.setup-note{font-size:11px;color:var(--text3);text-align:center;max-width:320px;line-height:1.65}
 
-  .history-list{display:flex;flex-direction:column;gap:8px}
-  .history-item{display:flex;gap:12px;align-items:flex-start;padding:12px;background:var(--bg3);border-radius:var(--radius-sm)}
-  .history-icon{font-size:18px;margin-top:2px}
-  .history-text{flex:1}
-  .history-action{font-size:13px;color:var(--text);font-weight:500}
-  .history-date{font-size:11px;color:var(--text3);margin-top:2px}
+/* ── LADEN ── */
+.loading-overlay{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:900;transition:opacity .35s}
+.loading-overlay.hidden{opacity:0;pointer-events:none}
+.spinner{width:30px;height:30px;border:3px solid var(--bg3);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:13px;color:var(--text3);font-weight:500}
 
-  .members-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  .member-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px 16px;text-align:center;cursor:pointer;transition:all .2s}
-  .member-card:active{transform:scale(.97)}
-  .member-card-avatar{width:56px;height:56px;border-radius:50%;margin:0 auto 10px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;font-family:'Syne',sans-serif}
-  .member-card-name{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;margin-bottom:4px}
-  .member-card-count{font-size:12px;color:var(--text3)}
-  .member-tools-count{display:inline-block;background:var(--accent);color:#000;font-family:'Syne',sans-serif;font-weight:700;font-size:11px;padding:2px 8px;border-radius:100px;margin-top:6px}
+/* ── APP SHELL ── */
+#app{display:flex;flex-direction:column;height:100dvh;max-width:480px;margin:0 auto;position:relative;overflow:hidden;background:var(--bg)}
 
-  .settings-section{margin-bottom:24px}
-  .settings-section-title{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--text3);margin-bottom:10px}
-  .settings-row{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:6px;cursor:pointer}
-  .settings-row-left{display:flex;align-items:center;gap:12px}
-  .settings-row-icon{font-size:18px}
-  .settings-row-text{font-size:14px}
-  .settings-row-chevron{color:var(--text3);font-size:12px}
-  .cat-manage-item{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:6px}
-  .cat-icon{font-size:22px}
-  .cat-name{flex:1;font-size:14px;font-weight:500}
-  .cat-delete-btn{width:30px;height:30px;border-radius:50%;background:rgba(231,76,60,.15);border:none;color:var(--red);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px}
+.app-header{padding:52px 20px 12px;background:var(--bg);position:relative;z-index:10;flex-shrink:0}
+.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.app-logo{font-family:'Nunito',sans-serif;font-weight:900;font-size:19px;color:var(--text);letter-spacing:-.2px}
+.app-logo span{color:var(--accent)}
+.header-actions{display:flex;gap:7px;align-items:center}
+.icon-btn{width:34px;height:34px;border-radius:50%;background:var(--bg3);border:none;color:var(--text2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .18s;font-size:15px;flex-shrink:0}
+.icon-btn:active{transform:scale(.88);background:var(--accent-bg);color:var(--accent)}
 
-  .tag-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-  .tag{padding:6px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:100px;font-size:13px;color:var(--text2);cursor:pointer;transition:all .2s}
-  .tag.selected{background:var(--accent);border-color:var(--accent);color:#000;font-weight:600}
+.sync-badge{display:flex;align-items:center;font-size:11px;color:var(--text3);background:var(--bg3);border-radius:100px;padding:4px 10px;gap:5px;font-weight:600;font-family:'Nunito',sans-serif}
+.sync-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.sync-dot.green{background:var(--green)}
+.sync-dot.yellow{background:#f0a500;animation:blink .9s infinite}
+.sync-dot.red{background:var(--red)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
 
-  .view{display:none;flex-direction:column;height:100%}
-  .view.active{display:flex}
-  .empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:40px;text-align:center}
-  .empty-icon{font-size:56px;opacity:.4}
-  .empty-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--text2)}
-  .empty-text{font-size:13px;color:var(--text3);line-height:1.6}
+.search-bar{position:relative}
+.search-bar input{width:100%;background:var(--bg3);border:1.5px solid transparent;border-radius:11px;padding:10px 15px 10px 38px;color:var(--text);font-family:'Nunito Sans',sans-serif;font-size:14px;outline:none;transition:border-color .2s,background .2s}
+.search-bar input:focus{border-color:var(--accent);background:var(--bg2)}
+.search-bar input::placeholder{color:var(--text3)}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:14px;pointer-events:none}
 
-  .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--bg3);border:1px solid var(--border);border-radius:100px;padding:12px 20px;font-size:13px;font-weight:500;z-index:200;transition:transform .3s cubic-bezier(.32,.72,0,1);white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.4)}
-  .toast.show{transform:translateX(-50%) translateY(0)}
+.categories-scroll{display:flex;gap:6px;padding:11px 20px 0;overflow-x:auto;scrollbar-width:none;flex-shrink:0}
+.categories-scroll::-webkit-scrollbar{display:none}
+.cat-chip{flex-shrink:0;padding:5px 13px;border-radius:100px;background:var(--bg3);border:1.5px solid transparent;color:var(--text2);font-size:13px;font-weight:700;cursor:pointer;transition:all .16s;white-space:nowrap;font-family:'Nunito',sans-serif}
+.cat-chip.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.cat-chip:active{transform:scale(.93)}
 
-  .bg-glow{position:fixed;width:300px;height:300px;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0}
-  .glow1{background:rgba(240,165,0,.06);top:-100px;right:-80px}
-  .glow2{background:rgba(224,92,42,.05);bottom:100px;left:-100px}
+.tool-count-bar{padding:9px 20px 0;flex-shrink:0}
+.tool-count-pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--text3);font-weight:600;font-family:'Nunito',sans-serif}
+.tool-count-num{font-size:15px;color:var(--accent);font-weight:800}
+
+.tools-container{flex:1;overflow-y:auto;padding:10px 20px 100px;scrollbar-width:none}
+.tools-container::-webkit-scrollbar{display:none}
+.section-title{font-family:'Nunito',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--text3);margin-bottom:9px;margin-top:6px}
+
+/* ── TOOL KAART ── */
+.tool-card{background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--radius);padding:13px;margin-bottom:8px;display:flex;gap:12px;align-items:center;cursor:pointer;transition:box-shadow .2s,transform .14s;box-shadow:var(--shadow)}
+.tool-card:active{transform:scale(.985);box-shadow:none}
+.tool-photo{width:50px;height:50px;border-radius:11px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;overflow:hidden;border:1.5px solid var(--border)}
+.tool-photo img{width:100%;height:100%;object-fit:cover}
+.tool-info{flex:1;min-width:0}
+.tool-name{font-family:'Nunito',sans-serif;font-weight:800;font-size:14px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text)}
+.tool-cat{font-size:12px;color:var(--text3);font-weight:500}
+.tool-member-right{text-align:center;flex-shrink:0}
+.member-avatar-sm{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;font-family:'Nunito',sans-serif;margin:0 auto 3px;overflow:hidden}
+.member-avatar-sm img{width:100%;height:100%;object-fit:cover}
+.member-name-small{font-size:10px;color:var(--text3);font-weight:600}
+
+/* ── NAVIGATIE ── */
+.bottom-nav{position:absolute;bottom:0;left:0;right:0;background:var(--nav-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-around;padding:7px 0 28px;z-index:20}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 16px;cursor:pointer;transition:all .18s}
+.nav-icon{font-size:20px;transition:transform .18s}
+.nav-label{font-size:10px;font-weight:700;color:var(--text3);transition:color .18s;font-family:'Nunito',sans-serif}
+.nav-item.active .nav-label{color:var(--accent)}
+.nav-item.active .nav-icon{transform:translateY(-2px)}
+.nav-item:active{transform:scale(.87)}
+.fab{width:48px;height:48px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff;cursor:pointer;box-shadow:0 3px 14px rgba(61,106,243,.38);transition:all .18s;margin-top:-17px;line-height:1}
+.fab:active{transform:scale(.9)}
+
+/* ── OVERLAY & SHEETS ── */
+.overlay{position:fixed;inset:0;background:rgba(10,14,38,.35);z-index:50;display:none;opacity:0;transition:opacity .22s}
+.overlay.open{display:block;opacity:1}
+.sheet{position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(100%);width:100%;max-width:480px;background:var(--bg2);border-radius:22px 22px 0 0;z-index:100;transition:transform .3s cubic-bezier(.32,.72,0,1);max-height:92dvh;display:flex;flex-direction:column;box-shadow:0 -3px 30px rgba(0,0,0,.10)}
+.sheet.open{transform:translateX(-50%) translateY(0)}
+.sheet-handle{width:30px;height:3px;background:var(--bg4);border-radius:2px;margin:10px auto 0;flex-shrink:0}
+.sheet-close{position:absolute;top:13px;right:14px;width:28px;height:28px;border-radius:50%;background:var(--bg3);border:none;color:var(--text3);font-size:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:5;transition:all .18s}
+.sheet-close:active{background:var(--red-bg);color:var(--red)}
+.sheet-header{padding:14px 20px 0;flex-shrink:0;position:relative}
+.sheet-title{font-family:'Nunito',sans-serif;font-size:18px;font-weight:900;color:var(--text);padding-right:34px}
+.sheet-subtitle{font-size:13px;color:var(--text3);margin-top:3px}
+.sheet-body{padding:14px 20px 18px;overflow-y:auto;flex:1;scrollbar-width:none}
+.sheet-body::-webkit-scrollbar{display:none}
+
+/* ── FORMULIER ── */
+.form-group{margin-bottom:14px}
+.form-label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:6px;font-family:'Nunito',sans-serif}
+.form-input,.form-select,.form-textarea{width:100%;background:var(--bg3);border:1.5px solid transparent;border-radius:var(--radius-sm);padding:11px 13px;color:var(--text);font-family:'Nunito Sans',sans-serif;font-size:15px;outline:none;transition:border-color .18s;-webkit-appearance:none}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--accent);background:var(--bg2)}
+.form-textarea{resize:none;min-height:72px;line-height:1.5}
+.photo-upload{width:100%;aspect-ratio:16/9;background:var(--bg3);border:2px dashed var(--bg4);border-radius:var(--radius);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;cursor:pointer;overflow:hidden;position:relative;transition:border-color .18s}
+.photo-upload:active{border-color:var(--accent)}
+.photo-upload img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.photo-upload-icon{font-size:26px}
+.photo-upload-text{font-size:12px;color:var(--text3);font-weight:500}
+#photoInput,#memberPhotoInput{display:none}
+.avatar-upload{width:76px;height:76px;border-radius:50%;background:var(--bg3);border:2px dashed var(--bg4);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;position:relative;margin:0 auto 10px;transition:border-color .18s}
+.avatar-upload:active{border-color:var(--accent)}
+.avatar-upload img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.avatar-upload-icon{font-size:20px}
+.btn{width:100%;padding:13px;border-radius:var(--radius-sm);border:none;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;transition:all .16s}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:0 3px 10px rgba(61,106,243,.3)}
+.btn-primary:active{opacity:.88;transform:scale(.98)}
+.btn-danger{background:var(--red);color:#fff;margin-top:7px}
+.btn-danger:active{opacity:.87}
+.btn-ghost{background:var(--bg3);color:var(--text2);border:1.5px solid var(--border)}
+.tag-list{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+.tag{padding:5px 12px;background:var(--bg3);border:1.5px solid transparent;border-radius:100px;font-size:13px;color:var(--text2);cursor:pointer;transition:all .16s;font-weight:600}
+.tag.selected{background:var(--accent-bg);border-color:var(--accent);color:var(--accent)}
+
+/* ── DETAIL SHEET ── */
+.detail-hero{width:100%;aspect-ratio:4/3;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:60px;border-radius:var(--radius) var(--radius) 0 0;overflow:hidden;flex-shrink:0}
+.detail-hero img{width:100%;height:100%;object-fit:cover}
+.detail-content{padding:16px 20px}
+.detail-name{font-family:'Nunito',sans-serif;font-size:21px;font-weight:900;margin-bottom:3px;color:var(--text)}
+.detail-cat-badge{display:inline-block;background:var(--bg3);border-radius:100px;padding:3px 10px;font-size:12px;color:var(--text2);margin-bottom:10px;font-weight:600}
+.detail-notes{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:13px}
+.detail-actions{display:flex;gap:7px;margin-bottom:13px}
+.detail-action-btn{flex:1;padding:9px;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:var(--bg3);color:var(--text2);font-family:'Nunito',sans-serif;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:all .16s}
+.detail-action-btn:active{transform:scale(.95)}
+.detail-action-btn.danger{border-color:var(--red-bg);background:var(--red-bg);color:var(--red)}
+.section-box{background:var(--bg3);border-radius:var(--radius);padding:12px;margin-bottom:11px}
+.section-box-title{font-family:'Nunito',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:10px}
+.member-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(65px,1fr));gap:6px}
+.member-option{display:flex;flex-direction:column;align-items:center;gap:5px;padding:8px 4px;border-radius:var(--radius-sm);background:var(--bg2);border:2px solid transparent;cursor:pointer;transition:all .16s}
+.member-option.selected{border-color:var(--accent);background:var(--accent-bg)}
+.member-option:active{transform:scale(.93)}
+.member-avatar-lg{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;font-family:'Nunito',sans-serif;overflow:hidden}
+.member-avatar-lg img{width:100%;height:100%;object-fit:cover}
+.member-name-opt{font-size:11px;color:var(--text2);text-align:center;font-weight:600}
+
+/* ── LOGBOEK ── */
+.history-list{display:flex;flex-direction:column;gap:6px}
+.history-item{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;background:var(--bg2);border-radius:var(--radius-sm);box-shadow:var(--shadow)}
+.history-icon{font-size:16px;margin-top:1px}
+.history-text{flex:1}
+.history-action{font-size:13px;color:var(--text);font-weight:500}
+.history-date{font-size:11px;color:var(--text3);margin-top:2px;font-weight:500}
+
+/* ── FAMILIE ── */
+.members-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.member-card{background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--radius);padding:16px 12px;text-align:center;cursor:pointer;transition:box-shadow .18s,transform .14s;box-shadow:var(--shadow);position:relative}
+.member-card:active{transform:scale(.97);box-shadow:none}
+.member-card-avatar{width:52px;height:52px;border-radius:50%;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:19px;font-weight:800;font-family:'Nunito',sans-serif;overflow:hidden}
+.member-card-avatar img{width:100%;height:100%;object-fit:cover}
+.member-card-name{font-family:'Nunito',sans-serif;font-weight:800;font-size:14px;margin-bottom:2px}
+.member-card-count{font-size:12px;color:var(--text3);font-weight:500}
+.member-card-badge{display:inline-block;background:var(--accent);color:#fff;font-family:'Nunito',sans-serif;font-weight:700;font-size:11px;padding:2px 7px;border-radius:100px;margin-top:4px}
+.member-card-edit{position:absolute;top:9px;right:9px;width:26px;height:26px;border-radius:50%;background:var(--bg3);border:none;color:var(--text3);font-size:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .18s}
+.member-card-edit:active{background:var(--accent-bg);color:var(--accent)}
+
+/* ── INSTELLINGEN ── */
+.settings-section{margin-bottom:20px}
+.settings-section-title{font-family:'Nunito',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--text3);margin-bottom:8px}
+.settings-row{display:flex;align-items:center;justify-content:space-between;padding:12px 13px;background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--radius-sm);margin-bottom:5px;cursor:pointer;box-shadow:var(--shadow);transition:background .15s}
+.settings-row:active{background:var(--bg3)}
+.settings-row-left{display:flex;align-items:center;gap:10px}
+.settings-row-icon{font-size:16px}
+.settings-row-text{font-size:14px;font-weight:500}
+.settings-row-chevron{color:var(--text3);font-size:12px}
+.cat-manage-item{display:flex;align-items:center;gap:10px;padding:10px 13px;background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--radius-sm);margin-bottom:5px;box-shadow:var(--shadow)}
+.cat-icon{font-size:19px}
+.cat-name{flex:1;font-size:14px;font-weight:600}
+.cat-action-btns{display:flex;gap:5px}
+.cat-action-btn{width:26px;height:26px;border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .18s}
+.cat-edit-btn{background:var(--accent-bg);color:var(--accent)}
+.cat-delete-btn{background:var(--red-bg);color:var(--red)}
+
+/* inklapbaar */
+.collapsible-header{display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:3px 0;user-select:none}
+.collapsible-header .settings-section-title{margin-bottom:0}
+.collapsible-arrow{color:var(--text3);font-size:13px;transition:transform .22s;font-weight:700}
+.collapsible-arrow.open{transform:rotate(90deg)}
+.collapsible-body{display:none;margin-top:8px}
+.collapsible-body.open{display:block}
+
+/* ── VIEWS ── */
+.view{display:none;flex-direction:column;height:100%}
+.view.active{display:flex}
+.empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;padding:40px;text-align:center}
+.empty-icon{font-size:50px;opacity:.3}
+.empty-title{font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;color:var(--text2)}
+.empty-text{font-size:13px;color:var(--text3);line-height:1.6}
+
+/* toast */
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--text);color:var(--bg);border-radius:100px;padding:10px 18px;font-size:13px;font-weight:700;z-index:200;transition:transform .26s cubic-bezier(.32,.72,0,1);white-space:nowrap;box-shadow:0 4px 18px rgba(0,0,0,.18);font-family:'Nunito',sans-serif}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
 </style>
 </head>
 <body>
-<div class="bg-glow glow1"></div>
-<div class="bg-glow glow2"></div>
 
-<!-- LOADING SCREEN -->
+<!-- LAADSCHERM -->
 <div class="loading-overlay" id="loadingOverlay">
-  <div style="font-family:'Syne',sans-serif;font-size:26px;font-weight:800">Tool<span style="color:var(--accent)">Trak</span></div>
+  <div style="font-family:'Nunito',sans-serif;font-size:22px;font-weight:900;color:var(--text)">Wie<span style="color:var(--accent)">Bewaar</span>Wat</div>
   <div class="spinner"></div>
-  <div class="loading-text" id="loadingText">Starting…</div>
+  <div class="loading-text" id="loadingText">Verbinden…</div>
 </div>
 
-<!-- FIREBASE SETUP SCREEN -->
+<!-- FIREBASE SETUP -->
 <div id="setupScreen" class="hidden">
-  <div class="setup-logo">Tool<span>Trak</span></div>
-  <div class="setup-tagline">Eenmalige Firebase setup</div>
-
+  <div class="setup-logo">Wie<span>Bewaar</span>Wat</div>
+  <div class="setup-tagline">Eenmalige Firebase-koppeling — circa 5 minuten</div>
   <div class="setup-card">
-    <div class="setup-card-title">🔥 Connect your Firebase project</div>
-    <div class="setup-card-sub">Firebase is a free Google service. Your family's data lives in your own account — nobody else can access it.</div>
+    <div class="setup-card-title">🔥 Verbind je Firebase-project</div>
+    <div class="setup-card-sub">Firebase is een gratis Google-dienst. Jouw familiedata staat in jouw eigen account — niemand anders heeft toegang.</div>
     <div class="setup-steps">
-      <div class="setup-step">
-        <div class="step-num">1</div>
-        <div class="step-text">Go to <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a> and create a new project (e.g. <em>ToolTrak</em>). Disable Google Analytics if asked.</div>
-      </div>
-      <div class="setup-step">
-        <div class="step-num">2</div>
-        <div class="step-text">In the left menu click <strong>Build → Firestore Database</strong> → <em>Create database</em> → choose <strong>Start in test mode</strong> → pick any location → Done.</div>
-      </div>
-      <div class="setup-step">
-        <div class="step-num">3</div>
-        <div class="step-text">Click the ⚙️ gear icon → <strong>Project settings</strong> → scroll to "Your apps" → click the <strong>&lt;/&gt;</strong> Web icon → give it a name → Register app.</div>
-      </div>
-      <div class="setup-step">
-        <div class="step-num">4</div>
-        <div class="step-text">You'll see a <code>firebaseConfig</code> block. Copy each value and paste below.</div>
-      </div>
+      <div class="setup-step"><div class="step-num">1</div><div class="step-text">Ga naar <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a> en maak een nieuw project aan (bijv. <em>WieBewaarWat</em>).</div></div>
+      <div class="setup-step"><div class="step-num">2</div><div class="step-text">Ga naar <strong>Build → Firestore Database</strong> → Maak database → kies <strong>Testmodus</strong> → kies een locatie → Gereed.</div></div>
+      <div class="setup-step"><div class="step-num">3</div><div class="step-text">Klik op ⚙️ → <strong>Projectinstellingen</strong> → scroll naar "Jouw apps" → klik <strong>&lt;/&gt;</strong> → geef naam → App registreren.</div></div>
+      <div class="setup-step"><div class="step-num">4</div><div class="step-text">Kopieer de waarden uit het <code>firebaseConfig</code> blok en plak ze hieronder.</div></div>
     </div>
-
-    <input class="setup-input" id="cfg_apiKey"            placeholder="apiKey" autocomplete="off">
-    <input class="setup-input" id="cfg_authDomain"        placeholder="authDomain  (e.g. my-project.firebaseapp.com)" autocomplete="off">
-    <input class="setup-input" id="cfg_projectId"         placeholder="projectId  (e.g. my-project-12345)" autocomplete="off">
-    <input class="setup-input" id="cfg_storageBucket"     placeholder="storageBucket  (e.g. my-project.appspot.com)" autocomplete="off">
+    <input class="setup-input" id="cfg_apiKey" placeholder="apiKey" autocomplete="off">
+    <input class="setup-input" id="cfg_authDomain" placeholder="authDomain" autocomplete="off">
+    <input class="setup-input" id="cfg_projectId" placeholder="projectId" autocomplete="off">
+    <input class="setup-input" id="cfg_storageBucket" placeholder="storageBucket" autocomplete="off">
     <input class="setup-input" id="cfg_messagingSenderId" placeholder="messagingSenderId" autocomplete="off">
-    <input class="setup-input" id="cfg_appId"             placeholder="appId" autocomplete="off">
-
-    <button class="setup-btn" onclick="saveFirebaseConfig()">Save &amp; Connect →</button>
+    <input class="setup-input" id="cfg_appId" placeholder="appId" autocomplete="off">
+    <button class="setup-btn" onclick="saveFirebaseConfig()">Opslaan &amp; Verbinden →</button>
   </div>
-  <div class="setup-note">💡 Share the same config with every family member — paste it once on each phone. After that, everyone's changes sync instantly in real time.</div>
+  <div class="setup-note">💡 Deel dezelfde config met elk familielid — eenmalig invoeren per telefoon. Daarna synchroniseert alles direct.</div>
 </div>
 
-<!-- MAIN APP -->
+<!-- HOOFD-APP -->
 <div id="app">
-  <!-- VIEW: TOOLS -->
+  <!-- TOOLS -->
   <div class="view active" id="view-tools">
     <div class="app-header">
       <div class="header-top">
-        <div class="app-logo">Tool<span>Trak</span></div>
+        <div class="app-logo">Wie<span>Bewaar</span>Wat</div>
         <div class="header-actions">
-          <div class="sync-badge"><span class="sync-dot yellow" id="syncDot"></span><span id="syncText">Connecting…</span></div>
+          <div class="sync-badge"><span class="sync-dot yellow" id="syncDot"></span><span id="syncText">Verbinden…</span></div>
+          <div class="icon-btn" id="darkToggleBtn" onclick="toggleDarkMode()">🌙</div>
         </div>
       </div>
       <div class="search-bar">
         <span class="search-icon">🔍</span>
-        <input type="text" placeholder="Tools zoeken…" id="searchInput" oninput="renderTools()">
+        <input type="text" placeholder="Zoek een tool…" id="searchInput" oninput="renderTools()">
       </div>
     </div>
     <div class="categories-scroll" id="categoryChips"></div>
-    <div class="stats-bar" id="statsBar"></div>
+    <div class="tool-count-bar" id="toolCountBar"></div>
     <div class="tools-container" id="toolsList"></div>
   </div>
 
-  <!-- VIEW: MEMBERS -->
+  <!-- FAMILIE -->
   <div class="view" id="view-members">
     <div class="app-header">
       <div class="header-top">
-        <div class="app-logo">Leden</div>
+        <div class="app-logo">Familie</div>
         <div class="icon-btn" onclick="openAddMemberSheet()">➕</div>
       </div>
     </div>
     <div class="tools-container" id="membersList"></div>
   </div>
 
-  <!-- VIEW: HISTORY -->
+  <!-- LOGBOEK -->
   <div class="view" id="view-history">
-    <div class="app-header"><div class="header-top"><div class="app-logo">Geschiedenis</div></div></div>
+    <div class="app-header"><div class="header-top"><div class="app-logo">Logboek</div></div></div>
     <div class="tools-container" id="historyList"></div>
   </div>
 
-  <!-- VIEW: SETTINGS -->
+  <!-- INSTELLINGEN -->
   <div class="view" id="view-settings">
     <div class="app-header"><div class="header-top"><div class="app-logo">Instellingen</div></div></div>
     <div class="tools-container" id="settingsList"></div>
   </div>
 
-  <!-- BOTTOM NAV -->
+  <!-- NAVIGATIE -->
   <div class="bottom-nav">
     <div class="nav-item active" onclick="switchView('tools',this)"><div class="nav-icon">🔧</div><div class="nav-label">Tools</div></div>
-    <div class="nav-item" onclick="switchView('members',this)"><div class="nav-icon">🥰</div><div class="nav-label">Familie</div></div>
+    <div class="nav-item" onclick="switchView('members',this)"><div class="nav-icon">👨‍👩‍👧‍👦</div><div class="nav-label">Familie</div></div>
     <div class="fab" onclick="openAddToolSheet()">＋</div>
     <div class="nav-item" onclick="switchView('history',this)"><div class="nav-icon">📋</div><div class="nav-label">Logboek</div></div>
-    <div class="nav-item" onclick="switchView('settings',this)"><div class="nav-icon">⚙️</div><div class="nav-label">Settings</div></div>
+    <div class="nav-item" onclick="switchView('settings',this)"><div class="nav-icon">⚙️</div><div class="nav-label">Instellingen</div></div>
   </div>
 </div>
 
 <div class="overlay" id="overlay" onclick="closeAllSheets()"></div>
 <div class="toast" id="toast"></div>
 
-<!-- SHEET: ADD/EDIT TOOL -->
+<!-- SHEET: TOOL TOEVOEGEN/WIJZIGEN -->
 <div class="sheet" id="sheetTool">
   <div class="sheet-handle"></div>
-  <div class="sheet-header">
-    <div class="sheet-title" id="sheetToolTitle">Tool Toevoegen</div>
-    <div class="sheet-subtitle">Voeg een nieuwe tool toe</div>
-  </div>
+  <button class="sheet-close" onclick="closeAllSheets()">✕</button>
+  <div class="sheet-header"><div class="sheet-title" id="sheetToolTitle">Tool Toevoegen</div></div>
   <div class="sheet-body">
     <div class="form-group">
       <label class="form-label">Foto</label>
       <div class="photo-upload" onclick="document.getElementById('photoInput').click()">
         <div class="photo-upload-icon">📸</div>
-        <div class="photo-upload-text">Tik om een foto te kiezen of te nemen</div>
+        <div class="photo-upload-text">Tik om foto te maken of te kiezen</div>
         <img id="photoPreview" style="display:none">
       </div>
-      <input type="file" id="photoInput" accept="image/*" capture="environment" onchange="handlePhoto(event)">
+      <input type="file" id="photoInput" accept="image/*" capture="environment" onchange="handlePhoto(event,'photoPreview',null,true)">
     </div>
-    <div class="form-group"><label class="form-label">Tool Naam</label><input class="form-input" id="toolNameInput" placeholder="bv. Afkortzaag"></div>
+    <div class="form-group"><label class="form-label">Naam</label><input class="form-input" id="toolNameInput" placeholder="bijv. Bosch Boormachine"></div>
     <div class="form-group"><label class="form-label">Categorie</label><select class="form-select" id="toolCatInput"></select></div>
-    <div class="form-group"><label class="form-label">Emoji (indien geen foto)</label><div class="tag-list" id="emojiPicker"></div></div>
-    <div class="form-group"><label class="form-label">Notities</label><textarea class="form-textarea" id="toolNotesInput" placeholder="Merk, model, speciale instructies…"></textarea></div>
-    <button class="btn btn-primary" onclick="saveTool()">Tool Opslaan</button>
-    <button class="btn btn-danger" id="deleteToolBtn" style="display:none" onclick="deleteTool()">Tool Verwijderen</button>
-    <div style="height:8px"></div>
+    <div class="form-group"><label class="form-label">Emoji (als er geen foto is)</label><div class="tag-list" id="emojiPicker"></div></div>
+    <div class="form-group"><label class="form-label">Notities</label><textarea class="form-textarea" id="toolNotesInput" placeholder="Merk, model, bijzonderheden…"></textarea></div>
+    <div class="form-group">
+      <label class="form-label">Bij wie is deze tool? <span style="color:var(--red)">*</span></label>
+      <div class="member-grid" id="toolHolderPicker"></div>
+    </div>
+    <button class="btn btn-primary" onclick="saveTool()">Opslaan</button>
+    <div style="height:6px"></div>
   </div>
 </div>
 
 <!-- SHEET: TOOL DETAIL -->
 <div class="sheet" id="sheetDetail">
   <div class="sheet-handle"></div>
-  <div class="sheet-body" style="padding-top:10px">
+  <button class="sheet-close" onclick="closeAllSheets()">✕</button>
+  <div class="sheet-body" style="padding-top:8px">
     <div class="detail-hero" id="detailHero"></div>
     <div class="detail-content">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
-        <div class="detail-name" id="detailName"></div>
-        <div class="icon-btn" style="flex-shrink:0;margin-left:12px;font-size:14px" onclick="editCurrentTool()">✏️</div>
-      </div>
+      <div class="detail-name" id="detailName"></div>
       <div class="detail-cat-badge" id="detailCat"></div>
       <div class="detail-notes" id="detailNotes"></div>
-      <div class="checkout-section">
-        <div class="checkout-title">📍 Wie heeft deze tool?</div>
+      <div class="detail-actions">
+        <button class="detail-action-btn" onclick="editCurrentTool()">✏️ Wijzigen</button>
+        <button class="detail-action-btn danger" onclick="deleteCurrentTool()">🗑️ Verwijderen</button>
+      </div>
+      <div class="section-box">
+        <div class="section-box-title">📍 Bij wie is deze tool?</div>
         <div class="member-grid" id="detailMemberGrid"></div>
       </div>
-      <div class="checkout-section">
-        <div class="checkout-title">📋 Geschiedenis</div>
+      <div class="section-box">
+        <div class="section-box-title">📋 Geschiedenis</div>
         <div class="history-list" id="detailHistory"></div>
       </div>
-      <div style="display:flex;gap:8px">
+      <div style="display:flex;gap:7px;margin-top:4px">
         <button class="btn btn-ghost" style="flex:1" onclick="closeAllSheets()">Sluiten</button>
         <button class="btn btn-primary" style="flex:1" onclick="confirmCheckout()">Bevestigen</button>
       </div>
@@ -369,25 +440,39 @@
   </div>
 </div>
 
-<!-- SHEET: ADD MEMBER -->
+<!-- SHEET: LID TOEVOEGEN/WIJZIGEN -->
 <div class="sheet" id="sheetMember">
   <div class="sheet-handle"></div>
-  <div class="sheet-header"><div class="sheet-title">Lid Toevoegen</div></div>
+  <button class="sheet-close" onclick="closeAllSheets()">✕</button>
+  <div class="sheet-header"><div class="sheet-title" id="sheetMemberTitle">Lid Toevoegen</div></div>
   <div class="sheet-body">
-    <div class="form-group"><label class="form-label">Naam</label><input class="form-input" id="memberNameInput" placeholder="bv. Hugo"></div>
-    <div class="form-group"><label class="form-label">Kies een kleur</label><div class="tag-list" id="colorPicker"></div></div>
-    <button class="btn btn-primary" onclick="saveMember()">Lid Toevoegen</button>
+    <div class="form-group" style="text-align:center">
+      <label class="form-label">Profielfoto</label>
+      <div class="avatar-upload" onclick="document.getElementById('memberPhotoInput').click()">
+        <span class="avatar-upload-icon" id="avatarUploadIcon">👤</span>
+        <img id="memberPhotoPreview" style="display:none">
+      </div>
+      <input type="file" id="memberPhotoInput" accept="image/*" capture="user" onchange="handlePhoto(event,'memberPhotoPreview','avatarUploadIcon',false)">
+      <div style="font-size:11px;color:var(--text3);margin-top:3px">Tik op het rondje voor een foto</div>
+    </div>
+    <div class="form-group"><label class="form-label">Naam</label><input class="form-input" id="memberNameInput" placeholder="bijv. Papa"></div>
+    <div class="form-group"><label class="form-label">Kleur</label><div class="tag-list" id="colorPicker"></div></div>
+    <button class="btn btn-primary" onclick="saveMember()">Opslaan</button>
+    <button class="btn btn-danger" id="deleteMemberBtn" style="display:none" onclick="deleteMember()">Lid Verwijderen</button>
+    <div style="height:6px"></div>
   </div>
 </div>
 
-<!-- SHEET: ADD CATEGORY -->
+<!-- SHEET: CATEGORIE TOEVOEGEN/WIJZIGEN -->
 <div class="sheet" id="sheetCategory">
   <div class="sheet-handle"></div>
-  <div class="sheet-header"><div class="sheet-title">Categorie Toevoegen</div></div>
+  <button class="sheet-close" onclick="closeAllSheets()">✕</button>
+  <div class="sheet-header"><div class="sheet-title" id="sheetCatTitle">Categorie Toevoegen</div></div>
   <div class="sheet-body">
-    <div class="form-group"><label class="form-label">Categorie Naam</label><input class="form-input" id="catNameInput" placeholder="bv. Kleding"></div>
+    <div class="form-group"><label class="form-label">Naam</label><input class="form-input" id="catNameInput" placeholder="bijv. Loodgieterswerk"></div>
     <div class="form-group"><label class="form-label">Emoji</label><div class="tag-list" id="catEmojiPicker"></div></div>
-    <button class="btn btn-primary" onclick="saveCategory()">Categorie Toevoegen</button>
+    <button class="btn btn-primary" onclick="saveCategory()">Opslaan</button>
+    <div style="height:6px"></div>
   </div>
 </div>
 
@@ -398,414 +483,363 @@ import {
   onSnapshot, addDoc, query, orderBy, limit, getDocs, writeBatch
 } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
-// ── CONSTANTS ─────────────────────────────────────────────
-const CFG_KEY = 'tooltrak_fb_cfg_v1';
-const EMOJIS = ['🔧','🔩','🪚','⚙️','🔨','🪛','⚡','🌿','🍴','✂️','🪣','🧰','💡','🔑','🏗️','🧲','📐','🪜','🌊','🪴','🔌'];
-const COLORS  = ['#f0a500','#e05c2a','#2ecc71','#3498db','#9b59b6','#e74c3c','#1abc9c','#f39c12','#e91e63','#00bcd4'];
+// ── CONSTANTEN ────────────────────────────────────────────
+const CFG_KEY    = 'wbw_fb_cfg_v1';
+const DARK_KEY   = 'wbw_dark';
+const EMOJIS     = ['🔧','🔩','🪚','⚙️','🔨','🪛','⚡','🌿','🍴','✂️','🪣','🧰','💡','🔑','🏗️','🧲','📐','🪜','🌊','🪴','🔌'];
+const COLORS     = ['#3d6af3','#e05c2a','#1e9e60','#9b59b6','#d93025','#0097a7','#f39c12','#e91e63','#607d8b','#795548'];
 const CAT_EMOJIS = ['📦','⚡','🌱','🏗️','🔧','🚗','🧹','💧','🔥','🛠️','🪟','🧰','🔌','🌡️','⛏️'];
 
 // ── STATE ─────────────────────────────────────────────────
-let db = null;
-let DB = { tools:[], members:[], categories:[], history:[] };
-let selectedCategory = 'all';
-let editingToolId = null;
-let detailToolId = null;
-let detailSelectedMember = null;
-let photoData = null;
-let selectedEmoji = '🔧';
-let selectedColor = COLORS[0];
-let selectedCatEmoji = '📦';
+let db=null, DB={tools:[],members:[],categories:[],history:[]};
+let selectedCategory='all', editingToolId=null, editingMemberId=null, editingCatId=null;
+let detailToolId=null, detailSelMember=null;
+let photoData=null, memberPhotoData=null;
+let selectedEmoji='🔧', selectedColor=COLORS[0], selectedCatEmoji='📦', toolHolderSel=null;
 
-// ── FIREBASE CONFIG ───────────────────────────────────────
-function getSavedCfg() {
-  try { return JSON.parse(localStorage.getItem(CFG_KEY)); } catch { return null; }
+// ── DARK MODE ─────────────────────────────────────────────
+function applyDark(on) {
+  document.body.classList.toggle('dark-mode',on);
+  document.getElementById('darkToggleBtn').textContent=on?'☀️':'🌙';
+  document.getElementById('themeColor').content=on?'#0d1021':'#f5f6fa';
 }
+window.toggleDarkMode=function(){const on=!document.body.classList.contains('dark-mode');localStorage.setItem(DARK_KEY,on?'1':'0');applyDark(on);};
+applyDark(localStorage.getItem(DARK_KEY)==='1');
 
-window.saveFirebaseConfig = function() {
-  const cfg = {
-    apiKey:            document.getElementById('cfg_apiKey').value.trim(),
-    authDomain:        document.getElementById('cfg_authDomain').value.trim(),
-    projectId:         document.getElementById('cfg_projectId').value.trim(),
-    storageBucket:     document.getElementById('cfg_storageBucket').value.trim(),
-    messagingSenderId: document.getElementById('cfg_messagingSenderId').value.trim(),
-    appId:             document.getElementById('cfg_appId').value.trim(),
+// ── FIREBASE ──────────────────────────────────────────────
+function getSavedCfg(){try{return JSON.parse(localStorage.getItem(CFG_KEY));}catch{return null;}}
+
+window.saveFirebaseConfig=function(){
+  const cfg={
+    apiKey:document.getElementById('cfg_apiKey').value.trim(),
+    authDomain:document.getElementById('cfg_authDomain').value.trim(),
+    projectId:document.getElementById('cfg_projectId').value.trim(),
+    storageBucket:document.getElementById('cfg_storageBucket').value.trim(),
+    messagingSenderId:document.getElementById('cfg_messagingSenderId').value.trim(),
+    appId:document.getElementById('cfg_appId').value.trim(),
   };
-  if (!cfg.apiKey || !cfg.projectId) { alert('Please fill in at least apiKey and projectId'); return; }
-  localStorage.setItem(CFG_KEY, JSON.stringify(cfg));
+  if(!cfg.apiKey||!cfg.projectId){alert('Vul minimaal apiKey en projectId in');return;}
+  localStorage.setItem(CFG_KEY,JSON.stringify(cfg));
   document.getElementById('setupScreen').classList.add('hidden');
   document.getElementById('loadingOverlay').classList.remove('hidden');
   connectFirebase(cfg);
 };
 
-function connectFirebase(cfg) {
-  try {
-    setLoadTxt('Connecting to Firebase…');
-    const app = initializeApp(cfg);
-    db = getFirestore(app);
-    setSyncStatus('yellow','Syncing…');
+function connectFirebase(cfg){
+  try{
+    setLoadTxt('Verbinden met Firebase…');
+    const app=initializeApp(cfg);
+    db=getFirestore(app);
+    setSyncStatus('yellow','Synchroniseren…');
     listenAll();
-  } catch(e) {
-    setLoadTxt('❌ ' + e.message);
-  }
+  }catch(e){setLoadTxt('❌ '+e.message);}
 }
 
-// ── REALTIME LISTENERS ────────────────────────────────────
-function listenAll() {
-  const loaded = { tools:false, members:false, categories:false, history:false };
-  function tryReveal() {
-    if (Object.values(loaded).every(Boolean)) {
-      hideLoading();
-      setSyncStatus('green','Online ●');
-    }
-  }
-
-  onSnapshot(collection(db,'tools'), snap => {
-    DB.tools = snap.docs.map(d => ({id:d.id,...d.data()}));
-    loaded.tools = true; tryReveal();
-    refreshActiveView(['tools','members']);
-    if (detailToolId) refreshDetailIfOpen();
-  });
-
-  onSnapshot(collection(db,'members'), snap => {
-    DB.members = snap.docs.map(d => ({id:d.id,...d.data()}));
-    loaded.members = true; tryReveal();
-    refreshActiveView(['tools','members']);
-  });
-
-  onSnapshot(collection(db,'categories'), snap => {
-    DB.categories = snap.docs.map(d => ({id:d.id,...d.data()}));
-    if (!DB.categories.length) seedCategories();
-    loaded.categories = true; tryReveal();
-    refreshActiveView(['tools','settings']);
-  });
-
-  onSnapshot(
-    query(collection(db,'history'), orderBy('date','desc'), limit(150)),
-    snap => {
-      DB.history = snap.docs.map(d => ({id:d.id,...d.data()}));
-      loaded.history = true; tryReveal();
-      refreshActiveView(['history']);
-    }
-  );
+function listenAll(){
+  const loaded={tools:false,members:false,categories:false,history:false};
+  function tryReveal(){if(Object.values(loaded).every(Boolean)){hideLoading();setSyncStatus('green','Online');}}
+  onSnapshot(collection(db,'tools'),snap=>{DB.tools=snap.docs.map(d=>({id:d.id,...d.data()}));loaded.tools=true;tryReveal();refreshActive(['tools','members']);if(detailToolId)refreshDetailIfOpen();});
+  onSnapshot(collection(db,'members'),snap=>{DB.members=snap.docs.map(d=>({id:d.id,...d.data()}));loaded.members=true;tryReveal();refreshActive(['tools','members']);});
+  onSnapshot(collection(db,'categories'),snap=>{DB.categories=snap.docs.map(d=>({id:d.id,...d.data()}));if(!DB.categories.length)seedCats();loaded.categories=true;tryReveal();refreshActive(['tools','settings']);});
+  onSnapshot(query(collection(db,'history'),orderBy('date','desc'),limit(200)),snap=>{DB.history=snap.docs.map(d=>({id:d.id,...d.data()}));loaded.history=true;tryReveal();refreshActive(['history']);});
+}
+async function seedCats(){
+  await setDoc(doc(db,'categories','power'),{name:'Gereedschap',icon:'⚡'});
+  await setDoc(doc(db,'categories','garden'),{name:'Tuin',icon:'🌱'});
+}
+function refreshActive(views){
+  const active=document.querySelector('.view.active')?.id.replace('view-','');
+  if(!views.includes(active))return;
+  ({tools:renderTools,members:renderMembers,history:renderHistory,settings:renderSettings})[active]?.();
 }
 
-async function seedCategories() {
-  await setDoc(doc(db,'categories','power'), {name:'Gereedschap', icon:'⚡'});
-  await setDoc(doc(db,'categories','garden'), {name:'Tuin', icon:'🌱'});
-}
-
-function refreshActiveView(views) {
-  const active = document.querySelector('.view.active')?.id.replace('view-','');
-  if (views.includes(active)) {
-    if (active==='tools') renderTools();
-    if (active==='members') renderMembers();
-    if (active==='history') renderHistory();
-    if (active==='settings') renderSettings();
-  }
-}
-
-// ── VIEW SWITCHING ────────────────────────────────────────
-window.switchView = function(name, el) {
+// ── VIEWS ─────────────────────────────────────────────────
+window.switchView=function(name,el){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById('view-'+name).classList.add('active');
-  if (el) el.classList.add('active');
-  if (name==='tools') renderTools();
-  if (name==='members') renderMembers();
-  if (name==='history') renderHistory();
-  if (name==='settings') renderSettings();
+  if(el)el.classList.add('active');
+  ({tools:renderTools,members:renderMembers,history:renderHistory,settings:renderSettings})[name]?.();
 };
 
-// ── TOOLS VIEW ────────────────────────────────────────────
-function renderCatChips() {
-  const all = [{id:'all',name:'All',icon:'🔧'}, ...DB.categories];
-  document.getElementById('categoryChips').innerHTML = all.map(c=>
-    `<div class="cat-chip ${selectedCategory===c.id?'active':''}" onclick="setCategory('${c.id}')">${c.icon} ${c.name}</div>`
-  ).join('');
+// ── TOOLS ─────────────────────────────────────────────────
+function renderCatChips(){
+  document.getElementById('categoryChips').innerHTML=
+    [{id:'all',name:'Alles',icon:'🔧'},...DB.categories].map(c=>
+      `<div class="cat-chip ${selectedCategory===c.id?'active':''}" onclick="setCategory('${c.id}')">${c.icon} ${c.name}</div>`
+    ).join('');
+}
+window.setCategory=id=>{selectedCategory=id;renderTools();};
+
+function renderTools(){
+  if(!db)return;
+  renderCatChips();
+  const q=(document.getElementById('searchInput').value||'').toLowerCase();
+  let tools=DB.tools;
+  if(selectedCategory!=='all')tools=tools.filter(t=>t.category===selectedCategory);
+  if(q)tools=tools.filter(t=>(t.name+' '+(t.notes||'')).toLowerCase().includes(q));
+  const catName=selectedCategory==='all'?'tools totaal':(DB.categories.find(c=>c.id===selectedCategory)?.name||'tools');
+  document.getElementById('toolCountBar').innerHTML=
+    `<div class="tool-count-pill"><span class="tool-count-num">${tools.length}</span>&nbsp;${catName}</div>`;
+  const el=document.getElementById('toolsList');
+  if(!tools.length){el.innerHTML=`<div class="empty-state"><div class="empty-icon">🧰</div><div class="empty-title">Geen tools gevonden</div><div class="empty-text">Tik op + om de eerste tool toe te voegen</div></div>`;return;}
+  el.innerHTML=tools.map(toolCard).join('');
 }
 
-window.setCategory = id => { selectedCategory=id; renderTools(); };
-
-function renderStats() {
-  const tot=DB.tools.length, out=DB.tools.filter(t=>t.holder).length;
-  document.getElementById('statsBar').innerHTML = `
-    <div class="stat-card"><div class="stat-num">${tot}</div><div class="stat-label">Total</div></div>
-    <div class="stat-card"><div class="stat-num" style="color:var(--green)">${tot-out}</div><div class="stat-label">Available</div></div>
-    <div class="stat-card"><div class="stat-num" style="color:var(--accent)">${out}</div><div class="stat-label">Out</div></div>`;
+function memberAvatarHTML(m,size='sm'){
+  if(!m)return`<div class="member-avatar-${size}" style="background:var(--bg4);color:var(--text3)">?</div>`;
+  const inner=m.photo?`<img src="${m.photo}">`:`<span>${m.name[0]}</span>`;
+  return`<div class="member-avatar-${size}" style="background:${m.color}22;color:${m.color}">${inner}</div>`;
 }
 
-function renderTools() {
-  if (!db) return;
-  renderCatChips(); renderStats();
-  const q = (document.getElementById('searchInput').value||'').toLowerCase();
-  let tools = DB.tools;
-  if (selectedCategory!=='all') tools=tools.filter(t=>t.category===selectedCategory);
-  if (q) tools=tools.filter(t=>(t.name+' '+(t.notes||'')).toLowerCase().includes(q));
-  const el = document.getElementById('toolsList');
-  if (!tools.length) {
-    el.innerHTML = `<div class="empty-state"><div class="empty-icon">🧰</div><div class="empty-title">No tools found</div><div class="empty-text">Tap + to add your first tool</div></div>`;
-    return;
-  }
-  const out=tools.filter(t=>t.holder), avail=tools.filter(t=>!t.holder);
-  let h='';
-  if (out.length) h+=`<div class="section-title">Checked Out (${out.length})</div>`+out.map(toolCard).join('');
-  if (avail.length) h+=`<div class="section-title">Available (${avail.length})</div>`+avail.map(toolCard).join('');
-  el.innerHTML=h;
-}
-
-function toolCard(tool) {
+function toolCard(tool){
   const m=tool.holder?DB.members.find(x=>x.id===tool.holder):null;
   const cat=DB.categories.find(c=>c.id===tool.category);
-  return `<div class="tool-card ${tool.holder?'checked-out':'available'}" onclick="openDetail('${tool.id}')">
+  return`<div class="tool-card" onclick="openDetail('${tool.id}')">
     <div class="tool-photo">${tool.photo?`<img src="${tool.photo}">`:(tool.emoji||'🔧')}</div>
     <div class="tool-info">
       <div class="tool-name">${tool.name}</div>
       <div class="tool-cat">${cat?cat.icon+' '+cat.name:''}</div>
-      <div class="tool-status ${tool.holder?'checked-out':'available'}"><div class="status-dot"></div>${tool.holder?'Checked out':'Available'}</div>
     </div>
-    ${m?`<div class="tool-member"><div class="member-avatar" style="background:${m.color}22;color:${m.color}">${m.name[0]}</div><div class="member-name-small">${m.name}</div></div>`:''}
+    <div class="tool-member-right">
+      ${memberAvatarHTML(m,'sm')}
+      <div class="member-name-small">${m?m.name:'—'}</div>
+    </div>
   </div>`;
 }
 
-// ── ADD / EDIT TOOL ───────────────────────────────────────
-window.openAddToolSheet = function() {
-  if (!db) { showToast('⚠️ Nog niet verbonden'); return; }
-  editingToolId=null; photoData=null; selectedEmoji='🔧';
+// ── TOOL TOEVOEGEN/WIJZIGEN ────────────────────────────────
+window.openAddToolSheet=function(){
+  if(!db){showToast('⚠️ Nog niet verbonden');return;}
+  editingToolId=null;photoData=null;selectedEmoji='🔧';toolHolderSel=null;
   document.getElementById('sheetToolTitle').textContent='Tool Toevoegen';
   document.getElementById('toolNameInput').value='';
   document.getElementById('toolNotesInput').value='';
   document.getElementById('photoPreview').style.display='none';
-  document.getElementById('deleteToolBtn').style.display='none';
-  populateCatSelect(); renderEmojiPicker('emojiPicker','tool');
+  populateCatSelect();renderEmojiPicker('emojiPicker','tool');renderToolHolderPicker(null);
   openSheet('sheetTool');
 };
-
-window.editCurrentTool = function() { openEditTool(detailToolId); };
-
-function openEditTool(id) {
-  const t=DB.tools.find(x=>x.id===id); if (!t) return;
-  editingToolId=id; photoData=t.photo||null; selectedEmoji=t.emoji||'🔧';
+window.editCurrentTool=function(){openEditTool(detailToolId);};
+function openEditTool(id){
+  const t=DB.tools.find(x=>x.id===id);if(!t)return;
+  editingToolId=id;photoData=t.photo||null;selectedEmoji=t.emoji||'🔧';toolHolderSel=t.holder||null;
   document.getElementById('sheetToolTitle').textContent='Tool Wijzigen';
   document.getElementById('toolNameInput').value=t.name;
   document.getElementById('toolNotesInput').value=t.notes||'';
-  document.getElementById('deleteToolBtn').style.display='block';
   const prev=document.getElementById('photoPreview');
-  if (t.photo){prev.src=t.photo;prev.style.display='block';}else prev.style.display='none';
-  populateCatSelect(t.category);
-  renderEmojiPicker('emojiPicker','tool',t.emoji);
-  closeAllSheets();
-  setTimeout(()=>openSheet('sheetTool'),120);
+  if(t.photo){prev.src=t.photo;prev.style.display='block';}else prev.style.display='none';
+  populateCatSelect(t.category);renderEmojiPicker('emojiPicker','tool',t.emoji);renderToolHolderPicker(t.holder);
+  closeAllSheets();setTimeout(()=>openSheet('sheetTool'),120);
 }
-
-function populateCatSelect(sel) {
+function renderToolHolderPicker(cur){
+  toolHolderSel=cur;
+  document.getElementById('toolHolderPicker').innerHTML=DB.members.map(m=>
+    `<div class="member-option ${toolHolderSel===m.id?'selected':''}" data-hid="${m.id}" onclick="pickToolHolder('${m.id}')">
+      ${memberAvatarHTML(m,'lg')}
+      <div class="member-name-opt">${m.name}</div>
+    </div>`
+  ).join('');
+}
+window.pickToolHolder=function(id){
+  toolHolderSel=id;
+  document.querySelectorAll('#toolHolderPicker .member-option').forEach(el=>el.classList.toggle('selected',el.dataset.hid===id));
+};
+function populateCatSelect(sel){
   document.getElementById('toolCatInput').innerHTML=DB.categories.map(c=>
     `<option value="${c.id}" ${c.id===sel?'selected':''}>${c.icon} ${c.name}</option>`).join('');
 }
-
-function renderEmojiPicker(cid,type,cur) {
-  const emojis = type==='cat' ? CAT_EMOJIS : EMOJIS;
-  if (type==='tool') selectedEmoji=cur||emojis[0];
-  if (type==='cat')  selectedCatEmoji=cur||emojis[0];
+function renderEmojiPicker(cid,type,cur){
+  const emojis=type==='cat'?CAT_EMOJIS:EMOJIS;
+  if(type==='tool')selectedEmoji=cur||emojis[0];
+  if(type==='cat')selectedCatEmoji=cur||emojis[0];
   const active=type==='tool'?selectedEmoji:selectedCatEmoji;
   document.getElementById(cid).innerHTML=emojis.map(e=>
     `<div class="tag ${e===active?'selected':''}" onclick="pickEmoji('${e}','${cid}','${type}')">${e}</div>`
   ).join('');
 }
 window.pickEmoji=function(e,cid,type){
-  if(type==='tool')selectedEmoji=e; else selectedCatEmoji=e;
+  if(type==='tool')selectedEmoji=e;else selectedCatEmoji=e;
   document.querySelectorAll(`#${cid} .tag`).forEach(el=>el.classList.toggle('selected',el.textContent===e));
 };
-
-window.handlePhoto=function(ev){
-  const file=ev.target.files[0]; if(!file) return;
-  const img=new Image(), url=URL.createObjectURL(file);
+window.handlePhoto=function(ev,previewId,iconId,isTool){
+  const file=ev.target.files[0];if(!file)return;
+  const img=new Image(),url=URL.createObjectURL(file);
   img.onload=()=>{
-    const c=document.createElement('canvas'), MAX=640;
-    let [w,h]=[img.width,img.height];
-    if(w>h&&w>MAX){h=h*MAX/w;w=MAX}else if(h>w&&h>MAX){w=w*MAX/h;h=MAX}else if(w>MAX){w=h=MAX}
-    c.width=w;c.height=h;
-    c.getContext('2d').drawImage(img,0,0,w,h);
-    photoData=c.toDataURL('image/jpeg',.78);
-    const prev=document.getElementById('photoPreview');
-    prev.src=photoData;prev.style.display='block';
+    const c=document.createElement('canvas'),MAX=640;
+    let[w,h]=[img.width,img.height];
+    if(w>h&&w>MAX){h=h*MAX/w;w=MAX;}else if(h>w&&h>MAX){w=w*MAX/h;h=MAX;}else if(w>MAX){w=h=MAX;}
+    c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);
+    const data=c.toDataURL('image/jpeg',.78);
+    const prev=document.getElementById(previewId);
+    prev.src=data;prev.style.display='block';
+    if(iconId){const ic=document.getElementById(iconId);if(ic)ic.style.display='none';}
+    if(isTool)photoData=data;else memberPhotoData=data;
     URL.revokeObjectURL(url);
   };
   img.src=url;
 };
-
 window.saveTool=async function(){
   const name=document.getElementById('toolNameInput').value.trim();
   if(!name){showToast('⚠️ Voer een naam in');return;}
-  const data={
-    name,
-    category:document.getElementById('toolCatInput').value,
-    notes:document.getElementById('toolNotesInput').value.trim(),
-    emoji:selectedEmoji,
-    photo:photoData||'',
-    updatedAt:Date.now()
-  };
+  if(!editingToolId&&toolHolderSel===null){showToast('⚠️ Kies wie de tool heeft');return;}
+  const data={name,category:document.getElementById('toolCatInput').value,notes:document.getElementById('toolNotesInput').value.trim(),emoji:selectedEmoji,photo:photoData||'',updatedAt:Date.now()};
   try{
     setSyncStatus('yellow','Opslaan…');
     if(editingToolId){
       await setDoc(doc(db,'tools',editingToolId),data,{merge:true});
-      showToast('✅ Tool geüpdated');
-    } else {
-      await addDoc(collection(db,'tools'),{...data,holder:null,history:[],createdAt:Date.now()});
+      if(toolHolderSel!==null)await setDoc(doc(db,'tools',editingToolId),{holder:toolHolderSel},{merge:true});
+      showToast('✅ Tool bijgewerkt');
+    }else{
+      const entry={who:toolHolderSel,action:'checked out',date:Date.now()};
+      await addDoc(collection(db,'tools'),{...data,holder:toolHolderSel,history:[entry],createdAt:Date.now()});
+      await addDoc(collection(db,'history'),{toolId:'new',toolName:name,...entry});
       showToast('✅ Tool toegevoegd!');
     }
     closeAllSheets();
-  }catch(e){showToast('❌ '+e.message);setSyncStatus('red','Error');}
+  }catch(e){showToast('❌ '+e.message);setSyncStatus('red','Fout');}
 };
-
-window.deleteTool=async function(){
-  if(!editingToolId||!confirm('Deze tool verwijderen?'))return;
-  try{await deleteDoc(doc(db,'tools',editingToolId));closeAllSheets();showToast('🗑️ Verwijderd');}
+window.deleteCurrentTool=async function(){
+  if(!detailToolId)return;
+  const t=DB.tools.find(x=>x.id===detailToolId);
+  if(!confirm(`"${t?.name}" definitief verwijderen?`))return;
+  try{await deleteDoc(doc(db,'tools',detailToolId));closeAllSheets();showToast('🗑️ Tool verwijderd');}
   catch(e){showToast('❌ '+e.message);}
 };
 
 // ── TOOL DETAIL ───────────────────────────────────────────
 window.openDetail=function(id){
-  const t=DB.tools.find(x=>x.id===id); if(!t)return;
-  detailToolId=id; detailSelectedMember=t.holder;
-  drawDetailSheet(t);
-  openSheet('sheetDetail');
+  const t=DB.tools.find(x=>x.id===id);if(!t)return;
+  detailToolId=id;detailSelMember=t.holder;drawDetailSheet(t);openSheet('sheetDetail');
 };
-
 function refreshDetailIfOpen(){
   if(document.getElementById('sheetDetail').classList.contains('open')&&detailToolId){
     const t=DB.tools.find(x=>x.id===detailToolId);
-    if(t){detailSelectedMember=t.holder;drawDetailSheet(t);}
+    if(t){detailSelMember=t.holder;drawDetailSheet(t);}
   }
 }
-
 function drawDetailSheet(t){
   const cat=DB.categories.find(c=>c.id===t.category);
   document.getElementById('detailHero').innerHTML=t.photo?`<img src="${t.photo}">`:(t.emoji||'🔧');
   document.getElementById('detailName').textContent=t.name;
   document.getElementById('detailCat').textContent=cat?cat.icon+' '+cat.name:'';
   document.getElementById('detailNotes').textContent=t.notes||'Geen notities.';
-
-  // member grid
-  document.getElementById('detailMemberGrid').innerHTML=
-    `<div class="member-option ${!detailSelectedMember?'selected':''}" onclick="selectMember(null)" style="grid-column:1/-1">
-      <div class="member-avatar-lg" style="background:rgba(46,204,113,.15);color:var(--green)">✓</div>
-      <div class="member-name-opt">Return / Available</div>
-    </div>`+
-    DB.members.map(m=>
-      `<div class="member-option ${detailSelectedMember===m.id?'selected':''}" data-mid="${m.id}" onclick="selectMember('${m.id}')">
-        <div class="member-avatar-lg" style="background:${m.color}22;color:${m.color}">${m.name[0]}</div>
-        <div class="member-name-opt">${m.name}</div>
-      </div>`
-    ).join('');
-
-  // history
-  const hist=[...(t.history||[])].reverse().slice(0,6);
-  document.getElementById('detailHistory').innerHTML=hist.length?hist.map(h=>{
-    const mem=DB.members.find(m=>m.id===h.who);
-    return `<div class="history-item">
-      <div class="history-icon">${h.action==='checked out'?'📤':'📥'}</div>
-      <div class="history-text">
-        <div class="history-action">${mem?mem.name:'Someone'} — ${h.action}</div>
-        <div class="history-date">${fmtDate(h.date)}</div>
-      </div>
-    </div>`;
-  }).join(''):'<div style="color:var(--text3);font-size:13px">Nog geen gescbiedenis</div>';
+  document.getElementById('detailMemberGrid').innerHTML=DB.members.map(m=>
+    `<div class="member-option ${detailSelMember===m.id?'selected':''}" data-mid="${m.id}" onclick="selectMember('${m.id}')">
+      ${memberAvatarHTML(m,'lg')}
+      <div class="member-name-opt">${m.name}</div>
+    </div>`
+  ).join('');
+  const hist=[...(t.history||[])].reverse().slice(0,8);
+  document.getElementById('detailHistory').innerHTML=hist.length
+    ?hist.map(h=>{const mem=DB.members.find(m=>m.id===h.who);return`<div class="history-item"><div class="history-icon">${h.action==='checked out'?'📤':'📥'}</div><div class="history-text"><div class="history-action">${mem?mem.name:'Onbekend'} — ${h.action==='checked out'?'heeft meegenomen':'heeft teruggegeven'}</div><div class="history-date">${fmtDate(h.date)}</div></div></div>`;}).join('')
+    :'<div style="color:var(--text3);font-size:13px;font-weight:500">Nog geen geschiedenis</div>';
 }
-
 window.selectMember=function(id){
-  detailSelectedMember=id;
-  document.querySelectorAll('#detailMemberGrid .member-option').forEach(el=>{
-    const mid=el.dataset.mid;
-    el.classList.toggle('selected', mid ? mid===id : id===null);
-  });
+  detailSelMember=id;
+  document.querySelectorAll('#detailMemberGrid .member-option').forEach(el=>el.classList.toggle('selected',el.dataset.mid===id));
 };
-
 window.confirmCheckout=async function(){
-  const t=DB.tools.find(x=>x.id===detailToolId); if(!t)return;
-  if(detailSelectedMember===t.holder){closeAllSheets();return;}
-  const action=detailSelectedMember?'checked out':'returned';
-  const who=detailSelectedMember||t.holder;
+  const t=DB.tools.find(x=>x.id===detailToolId);if(!t)return;
+  if(detailSelMember===t.holder){closeAllSheets();return;}
+  const action=detailSelMember?'checked out':'returned';
+  const who=detailSelMember||t.holder;
   const entry={who,action,date:Date.now()};
-  const newHist=[...(t.history||[]),entry];
   try{
     setSyncStatus('yellow','Opslaan…');
-    await setDoc(doc(db,'tools',detailToolId),{holder:detailSelectedMember,history:newHist},{merge:true});
+    await setDoc(doc(db,'tools',detailToolId),{holder:detailSelMember,history:[...(t.history||[]),entry]},{merge:true});
     await addDoc(collection(db,'history'),{toolId:detailToolId,toolName:t.name,...entry});
     const mem=DB.members.find(m=>m.id===who);
-    showToast(detailSelectedMember?`📤 ${t.name} → ${mem?.name}`:`📥 ${t.name} returned`);
+    showToast(detailSelMember?`📤 ${t.name} → ${mem?.name}`:`📥 ${t.name} teruggegeven`);
     closeAllSheets();
   }catch(e){showToast('❌ '+e.message);}
 };
 
-// ── MEMBERS VIEW ──────────────────────────────────────────
+// ── FAMILIE ───────────────────────────────────────────────
 function renderMembers(){
   const el=document.getElementById('membersList');
-  if(!DB.members.length){
-    el.innerHTML=`<div class="empty-state"><div class="empty-icon">👨‍👩‍👧‍👦</div><div class="empty-title">Nog geen leden</div><div class="empty-text">Tik ➕ om lid toe te voegen</div></div>`;
-    return;
-  }
+  if(!DB.members.length){el.innerHTML=`<div class="empty-state"><div class="empty-icon">👨‍👩‍👧‍👦</div><div class="empty-title">Nog geen leden</div><div class="empty-text">Tik ➕ om een familielid toe te voegen</div></div>`;return;}
   el.innerHTML=`<div class="members-grid">`+DB.members.map(m=>{
     const cnt=DB.tools.filter(t=>t.holder===m.id).length;
-    return `<div class="member-card" onclick="showMemberTools('${m.id}')">
-      <div class="member-card-avatar" style="background:${m.color}22;color:${m.color}">${m.name[0]}</div>
+    const inner=m.photo?`<img src="${m.photo}">`:`<span>${m.name[0]}</span>`;
+    return`<div class="member-card" onclick="showMemberTools('${m.id}')">
+      <button class="member-card-edit" onclick="event.stopPropagation();openEditMember('${m.id}')">✏️</button>
+      <div class="member-card-avatar" style="background:${m.color}22;color:${m.color}">${inner}</div>
       <div class="member-card-name">${m.name}</div>
-      <div class="member-card-count">${cnt} tool${cnt!==1?'s':''} out</div>
-      ${cnt>0?`<div class="member-tools-count">${cnt} out</div>`:''}
+      <div class="member-card-count">${cnt} tool${cnt!==1?'s':''} in bezit</div>
+      ${cnt>0?`<div class="member-card-badge">${cnt} uit</div>`:''}
     </div>`;
   }).join('')+'</div>';
 }
-
 window.openAddMemberSheet=function(){
+  editingMemberId=null;memberPhotoData=null;
+  document.getElementById('sheetMemberTitle').textContent='Lid Toevoegen';
   document.getElementById('memberNameInput').value='';
-  selectedColor=COLORS[0]; renderColorPicker();
+  document.getElementById('memberPhotoPreview').style.display='none';
+  const ic=document.getElementById('avatarUploadIcon');ic.style.display='flex';
+  document.getElementById('deleteMemberBtn').style.display='none';
+  selectedColor=COLORS[0];renderColorPicker();
   openSheet('sheetMember');
 };
-
+function openEditMember(id){
+  const m=DB.members.find(x=>x.id===id);if(!m)return;
+  editingMemberId=id;memberPhotoData=m.photo||null;
+  document.getElementById('sheetMemberTitle').textContent='Lid Wijzigen';
+  document.getElementById('memberNameInput').value=m.name;
+  document.getElementById('deleteMemberBtn').style.display='block';
+  const prev=document.getElementById('memberPhotoPreview');
+  if(m.photo){prev.src=m.photo;prev.style.display='block';document.getElementById('avatarUploadIcon').style.display='none';}
+  else{prev.style.display='none';document.getElementById('avatarUploadIcon').style.display='flex';}
+  selectedColor=m.color||COLORS[0];renderColorPicker();
+  openSheet('sheetMember');
+}
+window.openEditMember=openEditMember;
 function renderColorPicker(){
   document.getElementById('colorPicker').innerHTML=COLORS.map(c=>
-    `<div class="tag ${c===selectedColor?'selected':''}" onclick="pickColor('${c}')" style="background:${c}22;border-color:${c};color:${c};font-weight:700">${c===selectedColor?'✓':' '}</div>`
+    `<div class="tag ${c===selectedColor?'selected':''}" onclick="pickColor('${c}')" style="background:${c}22;border-color:${c===selectedColor?c:'transparent'};color:${c};font-weight:700">${c===selectedColor?'✓':'&nbsp;'}</div>`
   ).join('');
 }
 window.pickColor=function(c){selectedColor=c;renderColorPicker();};
-
 window.saveMember=async function(){
   const name=document.getElementById('memberNameInput').value.trim();
   if(!name){showToast('⚠️ Voer een naam in');return;}
-  try{await addDoc(collection(db,'members'),{name,color:selectedColor});closeAllSheets();showToast('✅ '+name+' toegevoegd!');}
+  const data={name,color:selectedColor,photo:memberPhotoData||''};
+  try{
+    if(editingMemberId){await setDoc(doc(db,'members',editingMemberId),data,{merge:true});showToast('✅ Lid bijgewerkt');}
+    else{await addDoc(collection(db,'members'),data);showToast('✅ '+name+' toegevoegd!');}
+    closeAllSheets();
+  }catch(e){showToast('❌ '+e.message);}
+};
+window.deleteMember=async function(){
+  if(!editingMemberId)return;
+  const m=DB.members.find(x=>x.id===editingMemberId);
+  const cnt=DB.tools.filter(t=>t.holder===editingMemberId).length;
+  if(cnt>0){showToast(`⚠️ ${m.name} heeft nog ${cnt} tool(s)`);return;}
+  if(!confirm(`${m.name} verwijderen?`))return;
+  try{await deleteDoc(doc(db,'members',editingMemberId));closeAllSheets();showToast('🗑️ Lid verwijderd');}
   catch(e){showToast('❌ '+e.message);}
 };
-
 window.showMemberTools=function(mid){
   const m=DB.members.find(x=>x.id===mid);
   const tools=DB.tools.filter(t=>t.holder===mid);
   if(!tools.length){showToast(`${m.name} heeft geen tools`);return;}
-  selectedCategory='all'; document.getElementById('searchInput').value='';
+  selectedCategory='all';document.getElementById('searchInput').value='';
   switchView('tools',document.querySelector('.nav-item'));
-  renderCatChips(); renderStats();
-  document.getElementById('toolsList').innerHTML=
-    `<div class="section-title">${m.name}'s Tools (${tools.length})</div>`+tools.map(toolCard).join('');
+  renderCatChips();
+  document.getElementById('toolCountBar').innerHTML=`<div class="tool-count-pill"><span class="tool-count-num">${tools.length}</span>&nbsp;tools van ${m.name}</div>`;
+  document.getElementById('toolsList').innerHTML=tools.map(toolCard).join('');
 };
 
-// ── HISTORY VIEW ──────────────────────────────────────────
+// ── LOGBOEK ───────────────────────────────────────────────
 function renderHistory(){
   const el=document.getElementById('historyList');
-  if(!DB.history.length){
-    el.innerHTML=`<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">Nog geen geschiedenis</div><div class="empty-text">Check out a tool to see activity</div></div>`;
-    return;
-  }
-  el.innerHTML=`<div class="section-title">Recente Activiteit</div>`+DB.history.map(h=>{
+  if(!DB.history.length){el.innerHTML=`<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">Nog geen activiteit</div><div class="empty-text">Check een tool uit om de geschiedenis te starten</div></div>`;return;}
+  el.innerHTML=`<div class="section-title">Recente activiteit</div>`+DB.history.map(h=>{
     const mem=DB.members.find(m=>m.id===h.who);
-    return `<div class="history-item">
-      <div class="history-icon">${h.action==='checked out'?'📤':'📥'}</div>
-      <div class="history-text">
-        <div class="history-action"><strong>${h.toolName}</strong> — ${mem?mem.name:'Unknown'} ${h.action}</div>
-        <div class="history-date">${fmtDate(h.date)}</div>
-      </div>
-    </div>`;
+    return`<div class="history-item"><div class="history-icon">${h.action==='checked out'?'📤':'📥'}</div><div class="history-text"><div class="history-action"><strong>${h.toolName}</strong> — ${mem?mem.name:'Onbekend'} ${h.action==='checked out'?'heeft meegenomen':'heeft teruggegeven'}</div><div class="history-date">${fmtDate(h.date)}</div></div></div>`;
   }).join('');
 }
 
-// ── SETTINGS VIEW ─────────────────────────────────────────
+// ── INSTELLINGEN ──────────────────────────────────────────
 function renderSettings(){
   document.getElementById('settingsList').innerHTML=`
     <div class="settings-section">
@@ -814,72 +848,83 @@ function renderSettings(){
         <div class="cat-manage-item">
           <div class="cat-icon">${c.icon}</div>
           <div class="cat-name">${c.name}</div>
-          <button class="cat-delete-btn" onclick="deleteCategory('${c.id}')">✕</button>
+          <div class="cat-action-btns">
+            <button class="cat-action-btn cat-edit-btn" onclick="openEditCategory('${c.id}')">✏️</button>
+            <button class="cat-action-btn cat-delete-btn" onclick="deleteCategory('${c.id}')">🗑️</button>
+          </div>
         </div>`).join('')}
-      <div style="margin-top:10px"><button class="btn btn-ghost" onclick="openAddCategorySheet()">＋ Categorie Toevoegen</button></div>
+      <div style="margin-top:9px"><button class="btn btn-ghost" onclick="openAddCategorySheet()">＋ Categorie toevoegen</button></div>
     </div>
+
     <div class="settings-section">
-      <div class="settings-section-title">Data (alleen voor Maarten)</div>
-      <div class="settings-row" onclick="exportData()">
-        <div class="settings-row-left"><div class="settings-row-icon">💾</div><div class="settings-row-text">Export backup (JSON)</div></div>
-        <div class="settings-row-chevron">›</div>
+      <div class="collapsible-header" onclick="toggleDataSec()">
+        <div class="settings-section-title" style="margin-bottom:0">Data (alleen voor Maarten)</div>
+        <span class="collapsible-arrow" id="dataArrow">›</span>
       </div>
-      <div class="settings-row" onclick="doClearHistory()">
-        <div class="settings-row-left"><div class="settings-row-icon">🗑️</div><div class="settings-row-text">Geschiedenis wissen (niet doen)</div></div>
-        <div class="settings-row-chevron">›</div>
-      </div>
-      <div class="settings-row" onclick="resetCfg()">
-        <div class="settings-row-left"><div class="settings-row-icon">🔥</div><div class="settings-row-text">Firebase config wijzigen (niet doen)</div></div>
-        <div class="settings-row-chevron">›</div>
+      <div class="collapsible-body" id="dataBody">
+        <div style="height:8px"></div>
+        <div class="settings-row" onclick="exportData()"><div class="settings-row-left"><div class="settings-row-icon">💾</div><div class="settings-row-text">Export backup (JSON)</div></div><div class="settings-row-chevron">›</div></div>
+        <div class="settings-row" onclick="doClearHistory()"><div class="settings-row-left"><div class="settings-row-icon">🗑️</div><div class="settings-row-text">Geschiedenis wissen (niet doen)</div></div><div class="settings-row-chevron">›</div></div>
+        <div class="settings-row" onclick="resetCfg()"><div class="settings-row-left"><div class="settings-row-icon">🔥</div><div class="settings-row-text">Firebase config wijzigen (niet doen)</div></div><div class="settings-row-chevron">›</div></div>
       </div>
     </div>
+
     <div class="settings-section">
-      <div class="settings-section-title">Install on phone</div>
-      <div class="settings-row"><div class="settings-row-left"><div class="settings-row-icon">🍎</div><div class="settings-row-text">iPhone: tik Share → "Aan beginscherm toevoegen"</div></div></div>
+      <div class="settings-section-title">App installeren op telefoon</div>
+      <div class="settings-row"><div class="settings-row-left"><div class="settings-row-icon">🍎</div><div class="settings-row-text">iPhone: tik Delen → "Zet op beginscherm"</div></div></div>
       <div class="settings-row"><div class="settings-row-left"><div class="settings-row-icon">🤖</div><div class="settings-row-text">Android: tik ⋮ → "Toevoegen aan beginscherm"</div></div></div>
     </div>
     <div class="settings-section">
-      <div class="settings-section-title">About</div>
-      <div class="settings-row"><div class="settings-row-left"><div class="settings-row-icon">ℹ️</div><div class="settings-row-text">ToolTrak v1.1 - Supervet!</div></div></div>
+      <div class="settings-section-title">Over</div>
+      <div class="settings-row"><div class="settings-row-left"><div class="settings-row-icon">ℹ️</div><div class="settings-row-text">WieBewaarWat v2.1 — Firebase sync</div></div></div>
     </div>`;
 }
-
+window.toggleDataSec=function(){
+  document.getElementById('dataBody').classList.toggle('open');
+  document.getElementById('dataArrow').classList.toggle('open');
+};
 window.openAddCategorySheet=function(){
+  editingCatId=null;
+  document.getElementById('sheetCatTitle').textContent='Categorie Toevoegen';
   document.getElementById('catNameInput').value='';
-  selectedCatEmoji='📦'; renderEmojiPicker('catEmojiPicker','cat','📦');
+  selectedCatEmoji='📦';renderEmojiPicker('catEmojiPicker','cat','📦');
+  openSheet('sheetCategory');
+};
+window.openEditCategory=function(id){
+  const c=DB.categories.find(x=>x.id===id);if(!c)return;
+  editingCatId=id;
+  document.getElementById('sheetCatTitle').textContent='Categorie Wijzigen';
+  document.getElementById('catNameInput').value=c.name;
+  selectedCatEmoji=c.icon||'📦';renderEmojiPicker('catEmojiPicker','cat',c.icon);
   openSheet('sheetCategory');
 };
 window.saveCategory=async function(){
   const name=document.getElementById('catNameInput').value.trim();
   if(!name){showToast('⚠️ Voer een naam in');return;}
-  const id=name.toLowerCase().replace(/\s+/g,'_')+'_'+Date.now();
-  try{await setDoc(doc(db,'categories',id),{name,icon:selectedCatEmoji});closeAllSheets();showToast('✅ Categorie toegevoegd');}
-  catch(e){showToast('❌ '+e.message);}
+  try{
+    if(editingCatId){await setDoc(doc(db,'categories',editingCatId),{name,icon:selectedCatEmoji},{merge:true});showToast('✅ Categorie bijgewerkt');}
+    else{const id=name.toLowerCase().replace(/\s+/g,'_')+'_'+Date.now();await setDoc(doc(db,'categories',id),{name,icon:selectedCatEmoji});showToast('✅ Categorie toegevoegd');}
+    closeAllSheets();
+  }catch(e){showToast('❌ '+e.message);}
 };
 window.deleteCategory=async function(id){
-  if(DB.tools.some(t=>t.category===id)){showToast('⚠️ Categorie is nog toegekend aan een tool');return;}
+  if(DB.tools.some(t=>t.category===id)){showToast('⚠️ Wijs tools eerst opnieuw in');return;}
+  const c=DB.categories.find(x=>x.id===id);
+  if(!confirm(`Categorie "${c?.name}" verwijderen?`))return;
   try{await deleteDoc(doc(db,'categories',id));showToast('🗑️ Categorie verwijderd');}
   catch(e){showToast('❌ '+e.message);}
 };
 window.exportData=function(){
   const b=new Blob([JSON.stringify(DB,null,2)],{type:'application/json'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(b);a.download='tooltrak-backup.json';a.click();
-  showToast('💾 Exported!');
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='wiebewaарwat-backup.json';a.click();
+  showToast('💾 Geëxporteerd!');
 };
 window.doClearHistory=async function(){
-  if(!confirm('Verwijder alle geschiedenis?'))return;
-  try{
-    const batch=writeBatch(db);
-    (await getDocs(collection(db,'history'))).forEach(d=>batch.delete(d.ref));
-    await batch.commit();
-    showToast('🗑️ Geschiedenis verwijderd');
-  }catch(e){showToast('❌ '+e.message);}
+  if(!confirm('Alle geschiedenis verwijderen? Dit kan niet ongedaan worden gemaakt.'))return;
+  try{const batch=writeBatch(db);(await getDocs(collection(db,'history'))).forEach(d=>batch.delete(d.ref));await batch.commit();showToast('🗑️ Geschiedenis gewist');}
+  catch(e){showToast('❌ '+e.message);}
 };
-window.resetCfg=function(){
-  if(!confirm('Reset Firebase config? Dit verwijdert je connectie!'))return;
-  localStorage.removeItem(CFG_KEY); location.reload();
-};
+window.resetCfg=function(){if(!confirm('Firebase config resetten? De app herlaadt.'))return;localStorage.removeItem(CFG_KEY);location.reload();};
 
 // ── SHEETS ────────────────────────────────────────────────
 window.openSheet=function(id){document.getElementById('overlay').classList.add('open');document.getElementById(id).classList.add('open');};
@@ -888,38 +933,30 @@ window.closeAllSheets=function(){document.getElementById('overlay').classList.re
 // ── UTILS ─────────────────────────────────────────────────
 window.showToast=function(msg){
   const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2600);
+  setTimeout(()=>t.classList.remove('show'),2800);
 };
 function fmtDate(ts){
   if(!ts)return'';
-  const d=new Date(ts),diff=Math.floor((Date.now()-d)/86400000);
-  if(diff===0)return'Today, '+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-  if(diff===1)return'Yesterday';
-  if(diff<7)return diff+' days ago';
-  return d.toLocaleDateString([],{day:'numeric',month:'short',year:'numeric'});
+  const d=new Date(ts),now=new Date();
+  if(now.toDateString()===d.toDateString())return'Vandaag, '+d.toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'});
+  const gist=new Date(now);gist.setDate(gist.getDate()-1);
+  if(gist.toDateString()===d.toDateString())return'Gisteren, '+d.toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'});
+  const diff=Math.floor((now-d)/86400000);
+  if(diff<7)return diff+' dagen geleden';
+  return d.toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'});
 }
-function setSyncStatus(color,text){
-  const d=document.getElementById('syncDot'),t=document.getElementById('syncText');
-  if(d){d.className='sync-dot '+color;t.textContent=text;}
-}
+function setSyncStatus(c,t){const d=document.getElementById('syncDot'),tx=document.getElementById('syncText');if(d){d.className='sync-dot '+c;tx.textContent=t;}}
 function setLoadTxt(t){const el=document.getElementById('loadingText');if(el)el.textContent=t;}
-function hideLoading(){
-  const el=document.getElementById('loadingOverlay');
-  el.classList.add('hidden');
-  setTimeout(()=>el.style.display='none',450);
-  renderTools();
-}
+function hideLoading(){const el=document.getElementById('loadingOverlay');el.classList.add('hidden');setTimeout(()=>el.style.display='none',400);renderTools();}
 
-// ── BOOT ──────────────────────────────────────────────────
+// ── OPSTARTEN ─────────────────────────────────────────────
 const saved=getSavedCfg();
-if(saved&&saved.apiKey&&saved.projectId){
-  connectFirebase(saved);
-} else {
+if(saved&&saved.apiKey&&saved.projectId){connectFirebase(saved);}
+else{
   document.getElementById('loadingOverlay').classList.add('hidden');
-  setTimeout(()=>document.getElementById('loadingOverlay').style.display='none',450);
+  setTimeout(()=>document.getElementById('loadingOverlay').style.display='none',400);
   document.getElementById('setupScreen').classList.remove('hidden');
 }
-
 document.addEventListener('touchmove',e=>{
   if(e.target.closest('.sheet-body,.tools-container,.categories-scroll,.setup-card'))return;
   e.preventDefault();
