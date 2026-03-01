@@ -622,7 +622,7 @@ function renderTools(){
   if(q)tools=tools.filter(t=>(t.name+' '+(t.notes||'')).toLowerCase().includes(q));
   // Altijd alfabetisch sorteren
   tools.sort((a,b)=>a.name.localeCompare(b.name,'nl'));
-  const catName=selectedCategory==='all'?'tools totaal':(DB.categories.find(c=>c.id===selectedCategory)?.name||'tools');
+  const catName=selectedCategory==='all'?'Totaal':(DB.categories.find(c=>c.id===selectedCategory)?.name||'tools');
   document.getElementById('toolCountBar').innerHTML=
     `<div class="tool-count-pill"><span class="tool-count-num">${tools.length}</span>&nbsp;${catName}</div>`;
   const el=document.getElementById('toolsList');
@@ -971,7 +971,7 @@ function drawDetailSheet(t){
   ).join('');
   const hist=[...(t.history||[])].reverse().slice(0,8);
   document.getElementById('detailHistory').innerHTML=hist.length
-    ?hist.map(h=>{const mem=DB.members.find(m=>m.id===h.who);return`<div class="history-item"><div class="history-icon">${h.action==='checked out'?'➡️':'⬅️'}</div><div class="history-text"><div class="history-action">${mem?mem.name:'Onbekend'} — naar ${h.action==='checked out'?'':''}</div><div class="history-date">${fmtDate(h.date)}</div></div></div>`;}).join('')
+    ?hist.map(h=>{const mem=DB.members.find(m=>m.id===h.who);return`<div class="history-item"><div class="history-icon">${h.action==='checked out'?'➡️':'⬅️'}</div><div class="history-text"><div class="history-action">${mem?mem.name:'Onbekend'} - naar ${h.action==='checked out'?'':''}</div><div class="history-date">${fmtDate(h.date)}</div></div></div>`;}).join('')
     :'<div style="color:var(--text3);font-size:13px;font-weight:500">Nog geen geschiedenis</div>';
 }
 window.selectMember=function(id){
@@ -1124,7 +1124,7 @@ function renderSettings(){
     </div>
     <div class="settings-section">
       <div class="settings-section-title">Over</div>
-      <div class="settings-row"><div class="settings-row-left"><div class="settings-row-icon">ℹ️</div><div class="settings-row-text">WieBewaartWat v2.1 — Saarloosjes</div></div></div>
+      <div class="settings-row"><div class="settings-row-left"><div class="settings-row-icon">ℹ️</div><div class="settings-row-text">WieBewaartWat v2.1 - Saarloosjes</div></div></div>
     </div>`;
 }
 window.toggleDataSec=function(){
