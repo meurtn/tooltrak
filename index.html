@@ -20,19 +20,19 @@
    Verander hieronder de waarden om de lichte stijl aan te passen.
    ─────────────────────────────────────────────────────────── */
 :root {
-  --bg:          #f5f6fa;          /* pagina-achtergrond */
-  --bg2:         #ffffff;          /* kaarten */
-  --bg3:         #eceef5;          /* invoervelden, chips */
-  --bg4:         #dde0ec;          /* randen, scheidingslijnen */
+  --bg:          #878a99;          /* pagina-achtergrond: #f5f6fa */
+  --bg2:         #ffffff;          /* kaarten: #ffffff */
+  --bg3:         #eceef5;          /* invoervelden, chips: #eceef5  */
+  --bg4:         #dde0ec;          /* randen, scheidingslijnen: #dde0ec */
   --border:      rgba(0,0,0,0.07);
 
-  --accent:      #3d6af3;          /* primair blauw: knoppen, actieve chips */
-  --accent-lt:   #5c83f5;          /* iets lichter blauw */
+  --accent:      #3d6af3;          /* primair blauw: knoppen, actieve chips: #3d6af3 */
+  --accent-lt:   #5c83f5;          /* iets lichter blauw: #5c83f5 */
   --accent-bg:   rgba(61,106,243,0.09);  /* subtiele blauwe achtergrond */
 
-  --text:        #1b2044;          /* hoofdtekst */
-  --text2:       #5c6585;          /* secundaire tekst */
-  --text3:       #9399b8;          /* labels, placeholders */
+  --text:        #1b2044;          /* hoofdtekst: #1b2044 */
+  --text2:       #5c6585;          /* secundaire tekst: #5c6585 */
+  --text3:       #9399b8;          /* labels, placeholders: #9399b8 */
 
   --green:       #1e9e60;
   --green-bg:    rgba(30,158,96,0.10);
@@ -51,19 +51,19 @@
    Verander hieronder de waarden om de donkere stijl aan te passen.
    ─────────────────────────────────────────────────────────── */
 body.dark-mode {
-  --bg:          #0d1021;
-  --bg2:         #141728;
-  --bg3:         #1b1f35;
-  --bg4:         #252a42;
+  --bg:          #0d1021;          /* pagina-achtergrond: #0d1021 */
+  --bg2:         #141728;          /* kaarten: #141728 */
+  --bg3:         #1b1f35;          /* invoervelden, chips: #1b1f35  */
+  --bg4:         #252a42;          /* randen, scheidingslijnen: #252a42 */
   --border:      rgba(255,255,255,0.07);
 
-  --accent:      #5577ff;
-  --accent-lt:   #7090ff;
+  --accent:      #5577ff;          /* knoppen, actieve chips: #5577ff */
+  --accent-lt:   #7090ff;          /* ...: #7090ff */
   --accent-bg:   rgba(85,119,255,0.12);
 
-  --text:        #e4e8f8;
-  --text2:       #8890b8;
-  --text3:       #555e88;
+  --text:        #e4e8f8;          /* hoofdtekst: #e4e8f8 */
+  --text2:       #8890b8;          /* secundaire tekst: #8890b8 */
+  --text3:       #555e88;          /* labels, placeholders: #555e88 */
 
   --green:       #27c270;
   --green-bg:    rgba(39,194,112,0.12);
@@ -403,7 +403,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Nunito
 <div class="sheet" id="sheetTool">
   <div class="sheet-handle"></div>
   <button class="sheet-close" onclick="closeAllSheets()">✕</button>
-  <div class="sheet-header"><div class="sheet-title" id="sheetToolTitle">Tool Toevoegen</div></div>
+  <div class="sheet-header"><div class="sheet-title" id="sheetToolTitle">Tool toevoegen</div></div>
   <div class="sheet-body">
     <div class="form-group">
       <label class="form-label">Foto</label>
@@ -415,12 +415,12 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Nunito
       <input type="file" id="photoInput" accept="image/*" capture="environment" onchange="handlePhoto(event,'photoPreview',null,true)">
       <button class="btn btn-ghost" id="removeToolPhotoBtn" style="display:none;margin-top:7px;font-size:13px" onclick="removeToolPhoto()">🗑️ Foto verwijderen</button>
     </div>
-    <div class="form-group"><label class="form-label">Naam</label><input class="form-input" id="toolNameInput" placeholder="bijv. Bosch Boormachine"></div>
+    <div class="form-group"><label class="form-label">Naam</label><input class="form-input" id="toolNameInput" placeholder="bijv. Schroevendraaier"></div>
     <div class="form-group"><label class="form-label">Categorie</label><select class="form-select" id="toolCatInput"></select></div>
     <div class="form-group"><label class="form-label">Emoji (als er geen foto is)</label><div class="tag-list" id="emojiPicker"></div></div>
     <div class="form-group"><label class="form-label">Notities</label><textarea class="form-textarea" id="toolNotesInput" placeholder="Merk, model, bijzonderheden…"></textarea></div>
     <div class="form-group">
-      <label class="form-label">Bij wie is deze tool? <span style="color:var(--red)">*</span></label>
+      <label class="form-label">Wie heeft deze tool? <span style="color:var(--red)">*</span></label>
       <div class="member-grid" id="toolHolderPicker"></div>
     </div>
     <button class="btn btn-primary" onclick="saveTool()">Opslaan</button>
@@ -443,7 +443,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Nunito
         <button class="detail-action-btn danger" onclick="deleteCurrentTool()">🗑️ Verwijderen</button>
       </div>
       <div class="section-box">
-        <div class="section-box-title">📍 Bij wie is deze tool?</div>
+        <div class="section-box-title">📍 Wie heeft deze tool?</div>
         <div class="member-grid" id="detailMemberGrid"></div>
       </div>
       <div class="section-box">
@@ -463,7 +463,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Nunito
 <div class="sheet" id="sheetMember">
   <div class="sheet-handle"></div>
   <button class="sheet-close" onclick="closeAllSheets()">✕</button>
-  <div class="sheet-header"><div class="sheet-title" id="sheetMemberTitle">Lid Toevoegen</div></div>
+  <div class="sheet-header"><div class="sheet-title" id="sheetMemberTitle">Lid toevoegen</div></div>
   <div class="sheet-body">
     <div class="form-group" style="text-align:center">
       <label class="form-label">Profielfoto</label>
@@ -475,10 +475,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Nunito
       <div style="font-size:11px;color:var(--text3);margin-top:3px">Tik op het rondje voor een foto</div>
       <button class="btn btn-ghost" id="removeMemberPhotoBtn" style="display:none;margin-top:8px;font-size:13px" onclick="removeMemberPhoto()">🗑️ Foto verwijderen</button>
     </div>
-    <div class="form-group"><label class="form-label">Naam</label><input class="form-input" id="memberNameInput" placeholder="bijv. Papa"></div>
+    <div class="form-group"><label class="form-label">Naam</label><input class="form-input" id="memberNameInput" placeholder="bijv. Hugo"></div>
     <div class="form-group"><label class="form-label">Kleur</label><div class="tag-list" id="colorPicker"></div></div>
     <button class="btn btn-primary" onclick="saveMember()">Opslaan</button>
-    <button class="btn btn-danger" id="deleteMemberBtn" style="display:none" onclick="deleteMember()">Lid Verwijderen</button>
+    <button class="btn btn-danger" id="deleteMemberBtn" style="display:none" onclick="deleteMember()">Lid verwijderen</button>
     <div style="height:6px"></div>
   </div>
 </div>
@@ -487,9 +487,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Nunito
 <div class="sheet" id="sheetCategory">
   <div class="sheet-handle"></div>
   <button class="sheet-close" onclick="closeAllSheets()">✕</button>
-  <div class="sheet-header"><div class="sheet-title" id="sheetCatTitle">Categorie Toevoegen</div></div>
+  <div class="sheet-header"><div class="sheet-title" id="sheetCatTitle">Categorie toevoegen</div></div>
   <div class="sheet-body">
-    <div class="form-group"><label class="form-label">Naam</label><input class="form-input" id="catNameInput" placeholder="bijv. Loodgieterswerk"></div>
+    <div class="form-group"><label class="form-label">Naam</label><input class="form-input" id="catNameInput" placeholder="bijv. Kleding"></div>
     <div class="form-group"><label class="form-label">Emoji</label><div class="tag-list" id="catEmojiPicker"></div></div>
     <button class="btn btn-primary" onclick="saveCategory()">Opslaan</button>
     <div style="height:6px"></div>
@@ -509,7 +509,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Nunito
     <div class="crop-viewport" id="cropViewport">
       <img id="cropImg" src="" draggable="false">
     </div>
-    <div class="crop-hint">Versleep om bij te stellen • Knijp om in/uit te zoomen</div>
+    <div class="crop-hint">Versleep om bij te stellen | Knijp om in/uit te zoomen</div>
     <div class="crop-btns">
       <button class="btn btn-ghost" onclick="cancelCrop()">Annuleren</button>
       <button class="btn btn-primary" onclick="confirmCrop()">Gebruiken</button>
@@ -656,7 +656,7 @@ function toolCard(tool){
 window.openAddToolSheet=function(){
   if(!db){showToast('⚠️ Nog niet verbonden');return;}
   editingToolId=null;photoData=null;selectedEmoji='🔧';toolHolderSel=null;
-  document.getElementById('sheetToolTitle').textContent='Tool Toevoegen';
+  document.getElementById('sheetToolTitle').textContent='Tool toevoegen';
   document.getElementById('toolNameInput').value='';
   document.getElementById('toolNotesInput').value='';
   document.getElementById('photoPreview').style.display='none';
@@ -668,7 +668,7 @@ window.editCurrentTool=function(){openEditTool(detailToolId);};
 function openEditTool(id){
   const t=DB.tools.find(x=>x.id===id);if(!t)return;
   editingToolId=id;photoData=t.photo||null;selectedEmoji=t.emoji||'🔧';toolHolderSel=t.holder||null;
-  document.getElementById('sheetToolTitle').textContent='Tool Wijzigen';
+  document.getElementById('sheetToolTitle').textContent='Tool wijzigen';
   document.getElementById('toolNameInput').value=t.name;
   document.getElementById('toolNotesInput').value=t.notes||'';
   const prev=document.getElementById('photoPreview');
@@ -971,7 +971,7 @@ function drawDetailSheet(t){
   ).join('');
   const hist=[...(t.history||[])].reverse().slice(0,8);
   document.getElementById('detailHistory').innerHTML=hist.length
-    ?hist.map(h=>{const mem=DB.members.find(m=>m.id===h.who);return`<div class="history-item"><div class="history-icon">${h.action==='checked out'?'📤':'📥'}</div><div class="history-text"><div class="history-action">${mem?mem.name:'Onbekend'} — ${h.action==='checked out'?'heeft meegenomen':'heeft teruggegeven'}</div><div class="history-date">${fmtDate(h.date)}</div></div></div>`;}).join('')
+    ?hist.map(h=>{const mem=DB.members.find(m=>m.id===h.who);return`<div class="history-item"><div class="history-icon">${h.action==='checked out'?'➡️':'⬅️'}</div><div class="history-text"><div class="history-action">${mem?mem.name:'Onbekend'} — naar ${h.action==='checked out'?'':''}</div><div class="history-date">${fmtDate(h.date)}</div></div></div>`;}).join('')
     :'<div style="color:var(--text3);font-size:13px;font-weight:500">Nog geen geschiedenis</div>';
 }
 window.selectMember=function(id){
@@ -989,7 +989,7 @@ window.confirmCheckout=async function(){
     await setDoc(doc(db,'tools',detailToolId),{holder:detailSelMember,history:[...(t.history||[]),entry]},{merge:true});
     await addDoc(collection(db,'history'),{toolId:detailToolId,toolName:t.name,...entry});
     const mem=DB.members.find(m=>m.id===who);
-    showToast(detailSelMember?`📤 ${t.name} → ${mem?.name}`:`📥 ${t.name} teruggegeven`);
+    showToast(detailSelMember?`➡️ ${t.name} → ${mem?.name}`:`⬅️ ${t.name} teruggegeven`);
     closeAllSheets();
   }catch(e){showToast('❌ '+e.message);}
 };
@@ -1013,7 +1013,7 @@ function renderMembers(){
 }
 window.openAddMemberSheet=function(){
   editingMemberId=null;memberPhotoData=null;
-  document.getElementById('sheetMemberTitle').textContent='Lid Toevoegen';
+  document.getElementById('sheetMemberTitle').textContent='Lid toevoegen';
   document.getElementById('memberNameInput').value='';
   document.getElementById('memberPhotoPreview').style.display='none';
   const ic=document.getElementById('avatarUploadIcon');ic.style.display='flex';
@@ -1025,7 +1025,7 @@ window.openAddMemberSheet=function(){
 function openEditMember(id){
   const m=DB.members.find(x=>x.id===id);if(!m)return;
   editingMemberId=id;memberPhotoData=m.photo||null;
-  document.getElementById('sheetMemberTitle').textContent='Lid Wijzigen';
+  document.getElementById('sheetMemberTitle').textContent='Lid wijzigen';
   document.getElementById('memberNameInput').value=m.name;
   document.getElementById('deleteMemberBtn').style.display='block';
   const prev=document.getElementById('memberPhotoPreview');
@@ -1084,7 +1084,7 @@ function renderHistory(){
   if(!DB.history.length){el.innerHTML=`<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">Nog geen activiteit</div><div class="empty-text">Check een tool uit om de geschiedenis te starten</div></div>`;return;}
   el.innerHTML=`<div class="section-title">Recente activiteit</div>`+DB.history.map(h=>{
     const mem=DB.members.find(m=>m.id===h.who);
-    return`<div class="history-item"><div class="history-icon">${h.action==='checked out'?'📤':'📥'}</div><div class="history-text"><div class="history-action"><strong>${h.toolName}</strong> — ${mem?mem.name:'Onbekend'} ${h.action==='checked out'?'heeft meegenomen':'heeft teruggegeven'}</div><div class="history-date">${fmtDate(h.date)}</div></div></div>`;
+    return`<div class="history-item"><div class="history-icon">${h.action==='checked out'?'➡️':'⬅️'}</div><div class="history-text"><div class="history-action"><strong>${h.toolName}</strong> — naar ${mem?mem.name:'Onbekend'} ${h.action==='checked out'?'':''}</div><div class="history-date">${fmtDate(h.date)}</div></div></div>`;
   }).join('');
 }
 
@@ -1125,7 +1125,7 @@ function renderSettings(){
     </div>
     <div class="settings-section">
       <div class="settings-section-title">Over</div>
-      <div class="settings-row"><div class="settings-row-left"><div class="settings-row-icon">ℹ️</div><div class="settings-row-text">WieBewaartWat v2.1 — Firebase sync</div></div></div>
+      <div class="settings-row"><div class="settings-row-left"><div class="settings-row-icon">ℹ️</div><div class="settings-row-text">WieBewaartWat v2.1 — Saarloos</div></div></div>
     </div>`;
 }
 window.toggleDataSec=function(){
@@ -1134,7 +1134,7 @@ window.toggleDataSec=function(){
 };
 window.openAddCategorySheet=function(){
   editingCatId=null;
-  document.getElementById('sheetCatTitle').textContent='Categorie Toevoegen';
+  document.getElementById('sheetCatTitle').textContent='Categorie toevoegen';
   document.getElementById('catNameInput').value='';
   selectedCatEmoji='📦';renderEmojiPicker('catEmojiPicker','cat','📦');
   openSheet('sheetCategory');
@@ -1142,7 +1142,7 @@ window.openAddCategorySheet=function(){
 window.openEditCategory=function(id){
   const c=DB.categories.find(x=>x.id===id);if(!c)return;
   editingCatId=id;
-  document.getElementById('sheetCatTitle').textContent='Categorie Wijzigen';
+  document.getElementById('sheetCatTitle').textContent='Categorie wijzigen';
   document.getElementById('catNameInput').value=c.name;
   selectedCatEmoji=c.icon||'📦';renderEmojiPicker('catEmojiPicker','cat',c.icon);
   openSheet('sheetCategory');
@@ -1157,7 +1157,7 @@ window.saveCategory=async function(){
   }catch(e){showToast('❌ '+e.message);}
 };
 window.deleteCategory=async function(id){
-  if(DB.tools.some(t=>t.category===id)){showToast('⚠️ Wijs tools eerst opnieuw in');return;}
+  if(DB.tools.some(t=>t.category===id)){showToast('⚠️ Er zijn nog tools gekoppeld aan deze categorie');return;}
   const c=DB.categories.find(x=>x.id===id);
   if(!confirm(`Categorie "${c?.name}" verwijderen?`))return;
   try{await deleteDoc(doc(db,'categories',id));showToast('🗑️ Categorie verwijderd');}
