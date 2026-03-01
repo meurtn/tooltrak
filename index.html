@@ -407,12 +407,13 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Nunito
   <div class="sheet-body">
     <div class="form-group">
       <label class="form-label">Foto</label>
-      <div class="photo-upload" onclick="document.getElementById('photoInput').click()">
+      <div class="photo-upload" id="toolPhotoUploadArea" onclick="document.getElementById('photoInput').click()">
         <div class="photo-upload-icon">📸</div>
         <div class="photo-upload-text">Tik om foto te maken of te kiezen</div>
         <img id="photoPreview" style="display:none">
       </div>
       <input type="file" id="photoInput" accept="image/*" capture="environment" onchange="handlePhoto(event,'photoPreview',null,true)">
+      <button class="btn btn-ghost" id="removeToolPhotoBtn" style="display:none;margin-top:7px;font-size:13px" onclick="removeToolPhoto()">🗑️ Foto verwijderen</button>
     </div>
     <div class="form-group"><label class="form-label">Naam</label><input class="form-input" id="toolNameInput" placeholder="bijv. Bosch Boormachine"></div>
     <div class="form-group"><label class="form-label">Categorie</label><select class="form-select" id="toolCatInput"></select></div>
@@ -472,6 +473,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Nunito
       </div>
       <input type="file" id="memberPhotoInput" accept="image/*" capture="user" onchange="handlePhoto(event,'memberPhotoPreview','avatarUploadIcon',false)">
       <div style="font-size:11px;color:var(--text3);margin-top:3px">Tik op het rondje voor een foto</div>
+      <button class="btn btn-ghost" id="removeMemberPhotoBtn" style="display:none;margin-top:8px;font-size:13px" onclick="removeMemberPhoto()">🗑️ Foto verwijderen</button>
     </div>
     <div class="form-group"><label class="form-label">Naam</label><input class="form-input" id="memberNameInput" placeholder="bijv. Papa"></div>
     <div class="form-group"><label class="form-label">Kleur</label><div class="tag-list" id="colorPicker"></div></div>
@@ -658,6 +660,7 @@ window.openAddToolSheet=function(){
   document.getElementById('toolNameInput').value='';
   document.getElementById('toolNotesInput').value='';
   document.getElementById('photoPreview').style.display='none';
+  document.getElementById('removeToolPhotoBtn').style.display='none';
   populateCatSelect();renderEmojiPicker('emojiPicker','tool');renderToolHolderPicker(null);
   openSheet('sheetTool');
 };
@@ -669,7 +672,8 @@ function openEditTool(id){
   document.getElementById('toolNameInput').value=t.name;
   document.getElementById('toolNotesInput').value=t.notes||'';
   const prev=document.getElementById('photoPreview');
-  if(t.photo){prev.src=t.photo;prev.style.display='block';}else prev.style.display='none';
+  if(t.photo){prev.src=t.photo;prev.style.display='block';document.getElementById('removeToolPhotoBtn').style.display='block';}
+  else{prev.style.display='none';document.getElementById('removeToolPhotoBtn').style.display='none';}
   populateCatSelect(t.category);renderEmojiPicker('emojiPicker','tool',t.emoji);renderToolHolderPicker(t.holder);
   closeAllSheets();setTimeout(()=>openSheet('sheetTool'),120);
 }
@@ -721,50 +725,64 @@ window.closeLightbox=function(){
 };
 
 // ── FOTO MET CROP ─────────────────────────────────────────
-let _cropState={file:null,isTool:true,previewId:null,iconId:null};
-let _crop={img:null,x:0,y:0,scale:1,vw:0,vh:0,iw:0,ih:0,isCircle:false};
+// _cropSrc: de volledige base64 dataURL van de originele foto (nooit revoked)
+let _cropState={isTool:true,previewId:null,iconId:null};
+let _cropSrc='';
+let _crop={x:0,y:0,scale:1,vw:0,vh:0,iw:0,ih:0};
 let _cropTouch={startDist:0,startScale:1,lastX:0,lastY:0,touching:false};
 
 window.handlePhoto=function(ev,previewId,iconId,isTool){
   const file=ev.target.files[0];if(!file)return;
-  ev.target.value=''; // reset so same file can be re-selected
-  _cropState={file,isTool,previewId,iconId};
-  const url=URL.createObjectURL(file);
-  const img=new Image();
-  img.onload=()=>{
-    URL.revokeObjectURL(url);
-    _crop.iw=img.naturalWidth;_crop.ih=img.naturalHeight;
-    openCropModal(img,isTool);
+  ev.target.value='';
+  _cropState={isTool,previewId,iconId};
+  // Lees het bestand als base64 — zo blijft de data altijd beschikbaar
+  const reader=new FileReader();
+  reader.onload=function(e){
+    _cropSrc=e.target.result;
+    const img=new Image();
+    img.onload=function(){
+      _crop.iw=img.naturalWidth;
+      _crop.ih=img.naturalHeight;
+      startCrop();
+    };
+    img.src=_cropSrc;
   };
-  img.src=url;
+  reader.readAsDataURL(file);
 };
 
-function openCropModal(imgEl,isTool){
-  const isCircle=!isTool; // profielfoto = cirkelvorm
-  _crop.isCircle=isCircle;
-  document.getElementById('cropTitle').textContent=isTool?'Foto bijsnijden':'Profielfoto bijsnijden';
+function startCrop(){
+  document.getElementById('cropTitle').textContent=_cropState.isTool?'Foto bijsnijden':'Profielfoto bijsnijden';
   const vp=document.getElementById('cropViewport');
-  // viewport: 16:9 voor tool, 1:1 voor avatar
-  if(isCircle){vp.style.aspectRatio='1/1';vp.style.borderRadius='50%';}
-  else{vp.style.aspectRatio='4/3';vp.style.borderRadius='12px';}
+  // Altijd 1:1 (vierkant) — zowel voor tools als profielfoto's
+  vp.style.aspectRatio='1/1';
+  vp.style.borderRadius=_cropState.isTool?'14px':'50%';
   vp.style.width='100%';
-  // Wacht op layout dan pas afmetingen lezen
-  requestAnimationFrame(()=>{
+
+  // Open modal eerst zodat layout berekend kan worden
+  document.getElementById('cropModal').classList.add('open');
+
+  // Gebruik dubbel rAF zodat browser layout heeft afgerond
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
     _crop.vw=vp.offsetWidth;
-    _crop.vh=vp.offsetHeight;
-    // Schaal zodat afbeelding viewport bedekt (cover)
-    const scaleX=_crop.vw/_crop.iw, scaleY=_crop.vh/_crop.ih;
+    _crop.vh=vp.offsetHeight||vp.offsetWidth; // fallback: zelfde als breedte
+
+    const scaleX=_crop.vw/_crop.iw;
+    const scaleY=_crop.vh/_crop.ih;
     _crop.scale=Math.max(scaleX,scaleY);
-    // Centreer
+
     _crop.x=(_crop.vw-_crop.iw*_crop.scale)/2;
     _crop.y=(_crop.vh-_crop.ih*_crop.scale)/2;
+
     const ci=document.getElementById('cropImg');
-    ci.src=imgEl.src;
-    ci.style.width=_crop.iw+'px';ci.style.height=_crop.ih+'px';
+    ci.onload=null; // voorkom dubbele triggers
+    ci.src=_cropSrc; // base64 — altijd beschikbaar
+    ci.style.width=_crop.iw+'px';
+    ci.style.height=_crop.ih+'px';
+    ci.style.maxWidth='none';
+    ci.style.maxHeight='none';
     applyCropTransform();
-    document.getElementById('cropModal').classList.add('open');
     setupCropEvents();
-  });
+  }));
 }
 
 function applyCropTransform(){
@@ -774,63 +792,77 @@ function applyCropTransform(){
 }
 
 function clampCrop(){
-  const minX=_crop.vw-_crop.iw*_crop.scale, minY=_crop.vh-_crop.ih*_crop.scale;
+  const minX=_crop.vw-_crop.iw*_crop.scale;
+  const minY=_crop.vh-_crop.ih*_crop.scale;
   _crop.x=Math.min(0,Math.max(minX,_crop.x));
   _crop.y=Math.min(0,Math.max(minY,_crop.y));
 }
 
 function setupCropEvents(){
-  const vp=document.getElementById('cropViewport');
-  // Remove old listeners by cloning
-  const vpNew=vp.cloneNode(true);
-  vp.parentNode.replaceChild(vpNew,vp);
+  // Vervang element om oude listeners te wissen
+  const old=document.getElementById('cropViewport');
+  const fresh=old.cloneNode(true);
+  old.parentNode.replaceChild(fresh,old);
   const el=document.getElementById('cropViewport');
+  // Herplaats het img-element (was ook gecloned maar src is al gezet)
+  // — src zit al in de clone dus dit werkt direct
 
-  // Touch
   el.addEventListener('touchstart',e=>{
     e.preventDefault();
     if(e.touches.length===1){
       _cropTouch.lastX=e.touches[0].clientX;
       _cropTouch.lastY=e.touches[0].clientY;
       _cropTouch.touching=true;
-    } else if(e.touches.length===2){
-      _cropTouch.startDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+    }else if(e.touches.length===2){
+      _cropTouch.startDist=Math.hypot(
+        e.touches[0].clientX-e.touches[1].clientX,
+        e.touches[0].clientY-e.touches[1].clientY);
       _cropTouch.startScale=_crop.scale;
+      _cropTouch.touching=false;
     }
   },{passive:false});
+
   el.addEventListener('touchmove',e=>{
     e.preventDefault();
     if(e.touches.length===1&&_cropTouch.touching){
       const dx=e.touches[0].clientX-_cropTouch.lastX;
       const dy=e.touches[0].clientY-_cropTouch.lastY;
-      _cropTouch.lastX=e.touches[0].clientX;_cropTouch.lastY=e.touches[0].clientY;
+      _cropTouch.lastX=e.touches[0].clientX;
+      _cropTouch.lastY=e.touches[0].clientY;
       _crop.x+=dx;_crop.y+=dy;
       clampCrop();applyCropTransform();
-    } else if(e.touches.length===2){
-      const dist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
-      const newScale=Math.max(Math.max(_crop.vw/_crop.iw,_crop.vh/_crop.ih),_cropTouch.startScale*(dist/_cropTouch.startDist));
-      // Zoom around center of viewport
-      const cx=_crop.vw/2,cy=_crop.vh/2;
-      _crop.x=cx-(_crop.x-cx)*newScale/_crop.scale- cx*(newScale/_crop.scale-1);
-      _crop.y=cy-(_crop.y-cy)*newScale/_crop.scale- cy*(newScale/_crop.scale-1);
+    }else if(e.touches.length===2){
+      const dist=Math.hypot(
+        e.touches[0].clientX-e.touches[1].clientX,
+        e.touches[0].clientY-e.touches[1].clientY);
+      const minScale=Math.max(_crop.vw/_crop.iw,_crop.vh/_crop.ih);
+      const newScale=Math.max(minScale,_cropTouch.startScale*(dist/_cropTouch.startDist));
+      const ratio=newScale/_crop.scale;
+      _crop.x=_crop.vw/2-(_crop.vw/2-_crop.x)*ratio;
+      _crop.y=_crop.vh/2-(_crop.vh/2-_crop.y)*ratio;
       _crop.scale=newScale;
       clampCrop();applyCropTransform();
     }
   },{passive:false});
+
   el.addEventListener('touchend',()=>{_cropTouch.touching=false;});
 
-  // Mouse (desktop)
-  let mouseDown=false,mLastX=0,mLastY=0;
-  el.addEventListener('mousedown',e=>{mouseDown=true;mLastX=e.clientX;mLastY=e.clientY;});
-  el.addEventListener('mousemove',e=>{if(!mouseDown)return;_crop.x+=e.clientX-mLastX;_crop.y+=e.clientY-mLastY;mLastX=e.clientX;mLastY=e.clientY;clampCrop();applyCropTransform();});
-  el.addEventListener('mouseup',()=>mouseDown=false);
+  let md=false,mlx=0,mly=0;
+  el.addEventListener('mousedown',e=>{md=true;mlx=e.clientX;mly=e.clientY;e.preventDefault();});
+  window.addEventListener('mousemove',e=>{
+    if(!md)return;
+    _crop.x+=e.clientX-mlx;_crop.y+=e.clientY-mly;
+    mlx=e.clientX;mly=e.clientY;
+    clampCrop();applyCropTransform();
+  });
+  window.addEventListener('mouseup',()=>{md=false;});
   el.addEventListener('wheel',e=>{
     e.preventDefault();
     const minScale=Math.max(_crop.vw/_crop.iw,_crop.vh/_crop.ih);
-    const newScale=Math.max(minScale,_crop.scale*(e.deltaY<0?1.1:.9));
-    const cx=_crop.vw/2,cy=_crop.vh/2;
-    _crop.x=cx-(_crop.x-cx)*(newScale/_crop.scale)- cx*(newScale/_crop.scale-1);
-    _crop.y=cy-(_crop.y-cy)*(newScale/_crop.scale)- cy*(newScale/_crop.scale-1);
+    const newScale=Math.max(minScale,_crop.scale*(e.deltaY<0?1.12:.9));
+    const ratio=newScale/_crop.scale;
+    _crop.x=_crop.vw/2-(_crop.vw/2-_crop.x)*ratio;
+    _crop.y=_crop.vh/2-(_crop.vh/2-_crop.y)*ratio;
     _crop.scale=newScale;
     clampCrop();applyCropTransform();
   },{passive:false});
@@ -841,34 +873,54 @@ window.cancelCrop=function(){
 };
 
 window.confirmCrop=function(){
-  const vp=document.getElementById('cropViewport');
-  const vw=_crop.vw||vp.offsetWidth,vh=_crop.vh||vp.offsetHeight;
-  // Render crop to canvas
+  const OUT=500; // vierkant uitvoer
   const canvas=document.createElement('canvas');
-  const OUT=_cropState.isTool?640:400;
-  canvas.width=OUT;canvas.height=_cropState.isTool?Math.round(OUT*vh/vw):OUT;
+  canvas.width=OUT;canvas.height=OUT;
   const ctx=canvas.getContext('2d');
-  if(_crop.isCircle){
-    ctx.beginPath();ctx.arc(canvas.width/2,canvas.height/2,canvas.width/2,0,Math.PI*2);ctx.clip();
-  }
-  // srcX, srcY, srcW, srcH in original image coordinates
-  const sx=-_crop.x/_crop.scale, sy=-_crop.y/_crop.scale;
-  const sw=vw/_crop.scale, sh=vh/_crop.scale;
-  ctx.drawImage(document.getElementById('cropImg'),sx,sy,sw,sh,0,0,canvas.width,canvas.height);
-  const data=canvas.toDataURL('image/jpeg',.82);
 
-  const prev=document.getElementById(_cropState.previewId);
-  prev.src=data;prev.style.display='block';
-  if(_cropState.iconId){const ic=document.getElementById(_cropState.iconId);if(ic)ic.style.display='none';}
-  if(_cropState.isTool)photoData=data;else memberPhotoData=data;
+  // Teken originele afbeelding bijgesneden naar viewport-coördinaten
+  const srcImg=new Image();
+  srcImg.onload=function(){
+    // Broncoördinaten in origineel beeld
+    const sx=-_crop.x/_crop.scale;
+    const sy=-_crop.y/_crop.scale;
+    const sw=_crop.vw/_crop.scale;
+    const sh=_crop.vh/_crop.scale;
+    ctx.drawImage(srcImg,sx,sy,sw,sh,0,0,OUT,OUT);
+    const data=canvas.toDataURL('image/jpeg',.85);
 
-  document.getElementById('cropModal').classList.remove('open');
+    const prev=document.getElementById(_cropState.previewId);
+    prev.src=data;prev.style.display='block';
+    if(_cropState.iconId){
+      const ic=document.getElementById(_cropState.iconId);
+      if(ic)ic.style.display='none';
+    }
+    if(_cropState.isTool){photoData=data;document.getElementById('removeToolPhotoBtn').style.display='block';}
+    else{memberPhotoData=data;document.getElementById('removeMemberPhotoBtn').style.display='block';}
+    document.getElementById('cropModal').classList.remove('open');
+  };
+  srcImg.src=_cropSrc;
+};
+
+window.removeToolPhoto=function(){
+  photoData='';
+  const prev=document.getElementById('photoPreview');
+  prev.src='';prev.style.display='none';
+  document.getElementById('removeToolPhotoBtn').style.display='none';
+};
+
+window.removeMemberPhoto=function(){
+  memberPhotoData='';
+  const prev=document.getElementById('memberPhotoPreview');
+  prev.src='';prev.style.display='none';
+  document.getElementById('avatarUploadIcon').style.display='flex';
+  document.getElementById('removeMemberPhotoBtn').style.display='none';
 };
 window.saveTool=async function(){
   const name=document.getElementById('toolNameInput').value.trim();
   if(!name){showToast('⚠️ Voer een naam in');return;}
   if(!editingToolId&&toolHolderSel===null){showToast('⚠️ Kies wie de tool heeft');return;}
-  const data={name,category:document.getElementById('toolCatInput').value,notes:document.getElementById('toolNotesInput').value.trim(),emoji:selectedEmoji,photo:photoData||'',updatedAt:Date.now()};
+  const data={name,category:document.getElementById('toolCatInput').value,notes:document.getElementById('toolNotesInput').value.trim(),emoji:selectedEmoji,photo:photoData===null?'':photoData,updatedAt:Date.now()};
   try{
     setSyncStatus('yellow','Opslaan…');
     if(editingToolId){
@@ -966,6 +1018,7 @@ window.openAddMemberSheet=function(){
   document.getElementById('memberPhotoPreview').style.display='none';
   const ic=document.getElementById('avatarUploadIcon');ic.style.display='flex';
   document.getElementById('deleteMemberBtn').style.display='none';
+  document.getElementById('removeMemberPhotoBtn').style.display='none';
   selectedColor=COLORS[0];renderColorPicker();
   openSheet('sheetMember');
 };
@@ -976,8 +1029,15 @@ function openEditMember(id){
   document.getElementById('memberNameInput').value=m.name;
   document.getElementById('deleteMemberBtn').style.display='block';
   const prev=document.getElementById('memberPhotoPreview');
-  if(m.photo){prev.src=m.photo;prev.style.display='block';document.getElementById('avatarUploadIcon').style.display='none';}
-  else{prev.style.display='none';document.getElementById('avatarUploadIcon').style.display='flex';}
+  if(m.photo){
+    prev.src=m.photo;prev.style.display='block';
+    document.getElementById('avatarUploadIcon').style.display='none';
+    document.getElementById('removeMemberPhotoBtn').style.display='block';
+  }else{
+    prev.style.display='none';
+    document.getElementById('avatarUploadIcon').style.display='flex';
+    document.getElementById('removeMemberPhotoBtn').style.display='none';
+  }
   selectedColor=m.color||COLORS[0];renderColorPicker();
   openSheet('sheetMember');
 }
@@ -991,7 +1051,7 @@ window.pickColor=function(c){selectedColor=c;renderColorPicker();};
 window.saveMember=async function(){
   const name=document.getElementById('memberNameInput').value.trim();
   if(!name){showToast('⚠️ Voer een naam in');return;}
-  const data={name,color:selectedColor,photo:memberPhotoData||''};
+  const data={name,color:selectedColor,photo:memberPhotoData===null?'':memberPhotoData};
   try{
     if(editingMemberId){await setDoc(doc(db,'members',editingMemberId),data,{merge:true});showToast('✅ Lid bijgewerkt');}
     else{await addDoc(collection(db,'members'),data);showToast('✅ '+name+' toegevoegd!');}
