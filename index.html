@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="WieBewaarWat">
+<meta name="apple-mobile-web-app-title" content="WieBewaartWat">
 <meta name="theme-color" content="#f5f6fa" id="themeColor">
-<title>WieBewaarWat</title>
+<title>WieBewaartWat</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Nunito+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -288,26 +288,44 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Nunito
 .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--text);color:var(--bg);border-radius:100px;padding:10px 18px;font-size:13px;font-weight:700;z-index:200;transition:transform .26s cubic-bezier(.32,.72,0,1);white-space:nowrap;box-shadow:0 4px 18px rgba(0,0,0,.18);font-family:'Nunito',sans-serif}
 .toast.show{transform:translateX(-50%) translateY(0)}
 
+/* ── LIGHTBOX (foto volledig scherm) ── */
+#lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:500;display:none;align-items:center;justify-content:center;cursor:zoom-out}
+#lightbox.open{display:flex}
+#lightbox img{max-width:95vw;max-height:90dvh;object-fit:contain;border-radius:10px;user-select:none}
+#lightbox-close{position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.15);border:none;color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:501}
+
+/* ── CROP MODAL ── */
+#cropModal{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:600;display:none;flex-direction:column;align-items:center;justify-content:flex-end}
+#cropModal.open{display:flex}
+.crop-card{width:100%;max-width:480px;background:var(--bg2);border-radius:22px 22px 0 0;padding:18px 20px 36px;display:flex;flex-direction:column;gap:14px}
+.crop-title{font-family:'Nunito',sans-serif;font-weight:800;font-size:16px;text-align:center}
+.crop-viewport{width:100%;position:relative;overflow:hidden;border-radius:12px;background:#000;touch-action:none;user-select:none}
+.crop-viewport.circle-crop{border-radius:50%}
+.crop-viewport img{position:absolute;transform-origin:0 0;will-change:transform;pointer-events:none;display:block}
+.crop-hint{font-size:12px;color:var(--text3);text-align:center;font-weight:500}
+.crop-btns{display:flex;gap:8px}
+.crop-btns .btn{flex:1}
+
 </style>
 </head>
 <body>
 
 <!-- LAADSCHERM -->
 <div class="loading-overlay" id="loadingOverlay">
-  <div style="font-family:'Nunito',sans-serif;font-size:22px;font-weight:900;color:var(--text)">Wie<span style="color:var(--accent)">Bewaar</span>Wat</div>
+  <div style="font-family:'Nunito',sans-serif;font-size:22px;font-weight:900;color:var(--text)">Wie<span style="color:var(--accent)">Bewaart</span>Wat</div>
   <div class="spinner"></div>
   <div class="loading-text" id="loadingText">Verbinden…</div>
 </div>
 
 <!-- FIREBASE SETUP -->
 <div id="setupScreen" class="hidden">
-  <div class="setup-logo">Wie<span>Bewaar</span>Wat</div>
+  <div class="setup-logo">Wie<span>Bewaart</span>Wat</div>
   <div class="setup-tagline">Eenmalige Firebase-koppeling — circa 5 minuten</div>
   <div class="setup-card">
     <div class="setup-card-title">🔥 Verbind je Firebase-project</div>
     <div class="setup-card-sub">Firebase is een gratis Google-dienst. Jouw familiedata staat in jouw eigen account — niemand anders heeft toegang.</div>
     <div class="setup-steps">
-      <div class="setup-step"><div class="step-num">1</div><div class="step-text">Ga naar <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a> en maak een nieuw project aan (bijv. <em>WieBewaarWat</em>).</div></div>
+      <div class="setup-step"><div class="step-num">1</div><div class="step-text">Ga naar <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a> en maak een nieuw project aan (bijv. <em>WieBewaartWat</em>).</div></div>
       <div class="setup-step"><div class="step-num">2</div><div class="step-text">Ga naar <strong>Build → Firestore Database</strong> → Maak database → kies <strong>Testmodus</strong> → kies een locatie → Gereed.</div></div>
       <div class="setup-step"><div class="step-num">3</div><div class="step-text">Klik op ⚙️ → <strong>Projectinstellingen</strong> → scroll naar "Jouw apps" → klik <strong>&lt;/&gt;</strong> → geef naam → App registreren.</div></div>
       <div class="setup-step"><div class="step-num">4</div><div class="step-text">Kopieer de waarden uit het <code>firebaseConfig</code> blok en plak ze hieronder.</div></div>
@@ -329,7 +347,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Nunito
   <div class="view active" id="view-tools">
     <div class="app-header">
       <div class="header-top">
-        <div class="app-logo">Wie<span>Bewaar</span>Wat</div>
+        <div class="app-logo">Wie<span>Bewaart</span>Wat</div>
         <div class="header-actions">
           <div class="sync-badge"><span class="sync-dot yellow" id="syncDot"></span><span id="syncText">Verbinden…</span></div>
           <div class="icon-btn" id="darkToggleBtn" onclick="toggleDarkMode()">🌙</div>
@@ -337,7 +355,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Nunito
       </div>
       <div class="search-bar">
         <span class="search-icon">🔍</span>
-        <input type="text" placeholder="Zoek een tool…" id="searchInput" oninput="renderTools()">
+        <input type="text" placeholder="Zoek een tool…" id="searchInput" oninput="onSearchInput()" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
       </div>
     </div>
     <div class="categories-scroll" id="categoryChips"></div>
@@ -371,7 +389,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Nunito
   <!-- NAVIGATIE -->
   <div class="bottom-nav">
     <div class="nav-item active" onclick="switchView('tools',this)"><div class="nav-icon">🔧</div><div class="nav-label">Tools</div></div>
-    <div class="nav-item" onclick="switchView('members',this)"><div class="nav-icon">👨‍👩‍👧‍👦</div><div class="nav-label">Familie</div></div>
+    <div class="nav-item" onclick="switchView('members',this)"><div class="nav-icon">👥</div><div class="nav-label">Familie</div></div>
     <div class="fab" onclick="openAddToolSheet()">＋</div>
     <div class="nav-item" onclick="switchView('history',this)"><div class="nav-icon">📋</div><div class="nav-label">Logboek</div></div>
     <div class="nav-item" onclick="switchView('settings',this)"><div class="nav-icon">⚙️</div><div class="nav-label">Instellingen</div></div>
@@ -476,6 +494,27 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Nunito
   </div>
 </div>
 
+<!-- LIGHTBOX -->
+<div id="lightbox" onclick="closeLightbox()">
+  <button id="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightboxImg" src="" alt="">
+</div>
+
+<!-- CROP MODAL -->
+<div id="cropModal">
+  <div class="crop-card">
+    <div class="crop-title" id="cropTitle">Foto bijsnijden</div>
+    <div class="crop-viewport" id="cropViewport">
+      <img id="cropImg" src="" draggable="false">
+    </div>
+    <div class="crop-hint">Versleep om bij te stellen • Knijp om in/uit te zoomen</div>
+    <div class="crop-btns">
+      <button class="btn btn-ghost" onclick="cancelCrop()">Annuleren</button>
+      <button class="btn btn-primary" onclick="confirmCrop()">Gebruiken</button>
+    </div>
+  </div>
+</div>
+
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
 import {
@@ -564,8 +603,9 @@ window.switchView=function(name,el){
 
 // ── TOOLS ─────────────────────────────────────────────────
 function renderCatChips(){
+  const sortedCats=[...DB.categories].sort((a,b)=>a.name.localeCompare(b.name,'nl'));
   document.getElementById('categoryChips').innerHTML=
-    [{id:'all',name:'Alles',icon:'🔧'},...DB.categories].map(c=>
+    [{id:'all',name:'Alles',icon:'🔧'},...sortedCats].map(c=>
       `<div class="cat-chip ${selectedCategory===c.id?'active':''}" onclick="setCategory('${c.id}')">${c.icon} ${c.name}</div>`
     ).join('');
 }
@@ -575,9 +615,11 @@ function renderTools(){
   if(!db)return;
   renderCatChips();
   const q=(document.getElementById('searchInput').value||'').toLowerCase();
-  let tools=DB.tools;
+  let tools=[...DB.tools];
   if(selectedCategory!=='all')tools=tools.filter(t=>t.category===selectedCategory);
   if(q)tools=tools.filter(t=>(t.name+' '+(t.notes||'')).toLowerCase().includes(q));
+  // Altijd alfabetisch sorteren
+  tools.sort((a,b)=>a.name.localeCompare(b.name,'nl'));
   const catName=selectedCategory==='all'?'tools totaal':(DB.categories.find(c=>c.id===selectedCategory)?.name||'tools');
   document.getElementById('toolCountBar').innerHTML=
     `<div class="tool-count-pill"><span class="tool-count-num">${tools.length}</span>&nbsp;${catName}</div>`;
@@ -661,22 +703,166 @@ window.pickEmoji=function(e,cid,type){
   if(type==='tool')selectedEmoji=e;else selectedCatEmoji=e;
   document.querySelectorAll(`#${cid} .tag`).forEach(el=>el.classList.toggle('selected',el.textContent===e));
 };
+// ── ZOEKFUNCTIE (direct bij typen) ───────────────────────
+let _searchTimer=null;
+window.onSearchInput=function(){
+  // Direct renderen — geen vertraging
+  renderTools();
+};
+
+// ── LIGHTBOX ──────────────────────────────────────────────
+window.openLightbox=function(src){
+  document.getElementById('lightboxImg').src=src;
+  document.getElementById('lightbox').classList.add('open');
+};
+window.closeLightbox=function(){
+  document.getElementById('lightbox').classList.remove('open');
+  document.getElementById('lightboxImg').src='';
+};
+
+// ── FOTO MET CROP ─────────────────────────────────────────
+let _cropState={file:null,isTool:true,previewId:null,iconId:null};
+let _crop={img:null,x:0,y:0,scale:1,vw:0,vh:0,iw:0,ih:0,isCircle:false};
+let _cropTouch={startDist:0,startScale:1,lastX:0,lastY:0,touching:false};
+
 window.handlePhoto=function(ev,previewId,iconId,isTool){
   const file=ev.target.files[0];if(!file)return;
-  const img=new Image(),url=URL.createObjectURL(file);
+  ev.target.value=''; // reset so same file can be re-selected
+  _cropState={file,isTool,previewId,iconId};
+  const url=URL.createObjectURL(file);
+  const img=new Image();
   img.onload=()=>{
-    const c=document.createElement('canvas'),MAX=640;
-    let[w,h]=[img.width,img.height];
-    if(w>h&&w>MAX){h=h*MAX/w;w=MAX;}else if(h>w&&h>MAX){w=w*MAX/h;h=MAX;}else if(w>MAX){w=h=MAX;}
-    c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);
-    const data=c.toDataURL('image/jpeg',.78);
-    const prev=document.getElementById(previewId);
-    prev.src=data;prev.style.display='block';
-    if(iconId){const ic=document.getElementById(iconId);if(ic)ic.style.display='none';}
-    if(isTool)photoData=data;else memberPhotoData=data;
     URL.revokeObjectURL(url);
+    _crop.iw=img.naturalWidth;_crop.ih=img.naturalHeight;
+    openCropModal(img,isTool);
   };
   img.src=url;
+};
+
+function openCropModal(imgEl,isTool){
+  const isCircle=!isTool; // profielfoto = cirkelvorm
+  _crop.isCircle=isCircle;
+  document.getElementById('cropTitle').textContent=isTool?'Foto bijsnijden':'Profielfoto bijsnijden';
+  const vp=document.getElementById('cropViewport');
+  // viewport: 16:9 voor tool, 1:1 voor avatar
+  if(isCircle){vp.style.aspectRatio='1/1';vp.style.borderRadius='50%';}
+  else{vp.style.aspectRatio='4/3';vp.style.borderRadius='12px';}
+  vp.style.width='100%';
+  // Wacht op layout dan pas afmetingen lezen
+  requestAnimationFrame(()=>{
+    _crop.vw=vp.offsetWidth;
+    _crop.vh=vp.offsetHeight;
+    // Schaal zodat afbeelding viewport bedekt (cover)
+    const scaleX=_crop.vw/_crop.iw, scaleY=_crop.vh/_crop.ih;
+    _crop.scale=Math.max(scaleX,scaleY);
+    // Centreer
+    _crop.x=(_crop.vw-_crop.iw*_crop.scale)/2;
+    _crop.y=(_crop.vh-_crop.ih*_crop.scale)/2;
+    const ci=document.getElementById('cropImg');
+    ci.src=imgEl.src;
+    ci.style.width=_crop.iw+'px';ci.style.height=_crop.ih+'px';
+    applyCropTransform();
+    document.getElementById('cropModal').classList.add('open');
+    setupCropEvents();
+  });
+}
+
+function applyCropTransform(){
+  const ci=document.getElementById('cropImg');
+  ci.style.transform=`translate(${_crop.x}px,${_crop.y}px) scale(${_crop.scale})`;
+  ci.style.transformOrigin='0 0';
+}
+
+function clampCrop(){
+  const minX=_crop.vw-_crop.iw*_crop.scale, minY=_crop.vh-_crop.ih*_crop.scale;
+  _crop.x=Math.min(0,Math.max(minX,_crop.x));
+  _crop.y=Math.min(0,Math.max(minY,_crop.y));
+}
+
+function setupCropEvents(){
+  const vp=document.getElementById('cropViewport');
+  // Remove old listeners by cloning
+  const vpNew=vp.cloneNode(true);
+  vp.parentNode.replaceChild(vpNew,vp);
+  const el=document.getElementById('cropViewport');
+
+  // Touch
+  el.addEventListener('touchstart',e=>{
+    e.preventDefault();
+    if(e.touches.length===1){
+      _cropTouch.lastX=e.touches[0].clientX;
+      _cropTouch.lastY=e.touches[0].clientY;
+      _cropTouch.touching=true;
+    } else if(e.touches.length===2){
+      _cropTouch.startDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+      _cropTouch.startScale=_crop.scale;
+    }
+  },{passive:false});
+  el.addEventListener('touchmove',e=>{
+    e.preventDefault();
+    if(e.touches.length===1&&_cropTouch.touching){
+      const dx=e.touches[0].clientX-_cropTouch.lastX;
+      const dy=e.touches[0].clientY-_cropTouch.lastY;
+      _cropTouch.lastX=e.touches[0].clientX;_cropTouch.lastY=e.touches[0].clientY;
+      _crop.x+=dx;_crop.y+=dy;
+      clampCrop();applyCropTransform();
+    } else if(e.touches.length===2){
+      const dist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+      const newScale=Math.max(Math.max(_crop.vw/_crop.iw,_crop.vh/_crop.ih),_cropTouch.startScale*(dist/_cropTouch.startDist));
+      // Zoom around center of viewport
+      const cx=_crop.vw/2,cy=_crop.vh/2;
+      _crop.x=cx-(_crop.x-cx)*newScale/_crop.scale- cx*(newScale/_crop.scale-1);
+      _crop.y=cy-(_crop.y-cy)*newScale/_crop.scale- cy*(newScale/_crop.scale-1);
+      _crop.scale=newScale;
+      clampCrop();applyCropTransform();
+    }
+  },{passive:false});
+  el.addEventListener('touchend',()=>{_cropTouch.touching=false;});
+
+  // Mouse (desktop)
+  let mouseDown=false,mLastX=0,mLastY=0;
+  el.addEventListener('mousedown',e=>{mouseDown=true;mLastX=e.clientX;mLastY=e.clientY;});
+  el.addEventListener('mousemove',e=>{if(!mouseDown)return;_crop.x+=e.clientX-mLastX;_crop.y+=e.clientY-mLastY;mLastX=e.clientX;mLastY=e.clientY;clampCrop();applyCropTransform();});
+  el.addEventListener('mouseup',()=>mouseDown=false);
+  el.addEventListener('wheel',e=>{
+    e.preventDefault();
+    const minScale=Math.max(_crop.vw/_crop.iw,_crop.vh/_crop.ih);
+    const newScale=Math.max(minScale,_crop.scale*(e.deltaY<0?1.1:.9));
+    const cx=_crop.vw/2,cy=_crop.vh/2;
+    _crop.x=cx-(_crop.x-cx)*(newScale/_crop.scale)- cx*(newScale/_crop.scale-1);
+    _crop.y=cy-(_crop.y-cy)*(newScale/_crop.scale)- cy*(newScale/_crop.scale-1);
+    _crop.scale=newScale;
+    clampCrop();applyCropTransform();
+  },{passive:false});
+}
+
+window.cancelCrop=function(){
+  document.getElementById('cropModal').classList.remove('open');
+};
+
+window.confirmCrop=function(){
+  const vp=document.getElementById('cropViewport');
+  const vw=_crop.vw||vp.offsetWidth,vh=_crop.vh||vp.offsetHeight;
+  // Render crop to canvas
+  const canvas=document.createElement('canvas');
+  const OUT=_cropState.isTool?640:400;
+  canvas.width=OUT;canvas.height=_cropState.isTool?Math.round(OUT*vh/vw):OUT;
+  const ctx=canvas.getContext('2d');
+  if(_crop.isCircle){
+    ctx.beginPath();ctx.arc(canvas.width/2,canvas.height/2,canvas.width/2,0,Math.PI*2);ctx.clip();
+  }
+  // srcX, srcY, srcW, srcH in original image coordinates
+  const sx=-_crop.x/_crop.scale, sy=-_crop.y/_crop.scale;
+  const sw=vw/_crop.scale, sh=vh/_crop.scale;
+  ctx.drawImage(document.getElementById('cropImg'),sx,sy,sw,sh,0,0,canvas.width,canvas.height);
+  const data=canvas.toDataURL('image/jpeg',.82);
+
+  const prev=document.getElementById(_cropState.previewId);
+  prev.src=data;prev.style.display='block';
+  if(_cropState.iconId){const ic=document.getElementById(_cropState.iconId);if(ic)ic.style.display='none';}
+  if(_cropState.isTool)photoData=data;else memberPhotoData=data;
+
+  document.getElementById('cropModal').classList.remove('open');
 };
 window.saveTool=async function(){
   const name=document.getElementById('toolNameInput').value.trim();
@@ -719,7 +905,9 @@ function refreshDetailIfOpen(){
 }
 function drawDetailSheet(t){
   const cat=DB.categories.find(c=>c.id===t.category);
-  document.getElementById('detailHero').innerHTML=t.photo?`<img src="${t.photo}">`:(t.emoji||'🔧');
+  document.getElementById('detailHero').innerHTML=t.photo
+    ?`<img src="${t.photo}" style="cursor:zoom-in" onclick="openLightbox('${t.photo.replace(/'/g,"\\'")}')">`
+    :(t.emoji||'🔧');
   document.getElementById('detailName').textContent=t.name;
   document.getElementById('detailCat').textContent=cat?cat.icon+' '+cat.name:'';
   document.getElementById('detailNotes').textContent=t.notes||'Geen notities.';
@@ -757,8 +945,9 @@ window.confirmCheckout=async function(){
 // ── FAMILIE ───────────────────────────────────────────────
 function renderMembers(){
   const el=document.getElementById('membersList');
-  if(!DB.members.length){el.innerHTML=`<div class="empty-state"><div class="empty-icon">👨‍👩‍👧‍👦</div><div class="empty-title">Nog geen leden</div><div class="empty-text">Tik ➕ om een familielid toe te voegen</div></div>`;return;}
-  el.innerHTML=`<div class="members-grid">`+DB.members.map(m=>{
+  if(!DB.members.length){el.innerHTML=`<div class="empty-state"><div class="empty-icon">👥</div><div class="empty-title">Nog geen leden</div><div class="empty-text">Tik ➕ om een familielid toe te voegen</div></div>`;return;}
+  const members=[...DB.members].sort((a,b)=>a.name.localeCompare(b.name,'nl'));
+  el.innerHTML=`<div class="members-grid">`+members.map(m=>{
     const cnt=DB.tools.filter(t=>t.holder===m.id).length;
     const inner=m.photo?`<img src="${m.photo}">`:`<span>${m.name[0]}</span>`;
     return`<div class="member-card" onclick="showMemberTools('${m.id}')">
@@ -844,7 +1033,7 @@ function renderSettings(){
   document.getElementById('settingsList').innerHTML=`
     <div class="settings-section">
       <div class="settings-section-title">Categorieën</div>
-      ${DB.categories.map(c=>`
+      ${[...DB.categories].sort((a,b)=>a.name.localeCompare(b.name,'nl')).map(c=>`
         <div class="cat-manage-item">
           <div class="cat-icon">${c.icon}</div>
           <div class="cat-name">${c.name}</div>
@@ -876,7 +1065,7 @@ function renderSettings(){
     </div>
     <div class="settings-section">
       <div class="settings-section-title">Over</div>
-      <div class="settings-row"><div class="settings-row-left"><div class="settings-row-icon">ℹ️</div><div class="settings-row-text">WieBewaarWat v2.1 — Firebase sync</div></div></div>
+      <div class="settings-row"><div class="settings-row-left"><div class="settings-row-icon">ℹ️</div><div class="settings-row-text">WieBewaartWat v2.1 — Firebase sync</div></div></div>
     </div>`;
 }
 window.toggleDataSec=function(){
