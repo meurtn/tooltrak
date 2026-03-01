@@ -420,7 +420,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Nunito
     <div class="form-group"><label class="form-label">Emoji (als er geen foto is)</label><div class="tag-list" id="emojiPicker"></div></div>
     <div class="form-group"><label class="form-label">Notities</label><textarea class="form-textarea" id="toolNotesInput" placeholder="Merk, model, bijzonderheden…"></textarea></div>
     <div class="form-group">
-      <label class="form-label">Wie heeft deze tool? <span style="color:var(--red)">*</span></label>
+      <label class="form-label">Wie heeft deze tool nu? <span style="color:var(--red)">*</span></label>
       <div class="member-grid" id="toolHolderPicker"></div>
     </div>
     <button class="btn btn-primary" onclick="saveTool()">Opslaan</button>
@@ -443,7 +443,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Nunito
         <button class="detail-action-btn danger" onclick="deleteCurrentTool()">🗑️ Verwijderen</button>
       </div>
       <div class="section-box">
-        <div class="section-box-title">📍 Wie heeft deze tool?</div>
+        <div class="section-box-title">📍 Wie heeft deze tool nu?</div>
         <div class="member-grid" id="detailMemberGrid"></div>
       </div>
       <div class="section-box">
@@ -1007,7 +1007,6 @@ function renderMembers(){
       <div class="member-card-avatar" style="background:${m.color}22;color:${m.color}">${inner}</div>
       <div class="member-card-name">${m.name}</div>
       <div class="member-card-count">${cnt} tool${cnt!==1?'s':''} in bezit</div>
-      ${cnt>0?`<div class="member-card-badge">${cnt} uit</div>`:''}
     </div>`;
   }).join('')+'</div>';
 }
@@ -1125,7 +1124,7 @@ function renderSettings(){
     </div>
     <div class="settings-section">
       <div class="settings-section-title">Over</div>
-      <div class="settings-row"><div class="settings-row-left"><div class="settings-row-icon">ℹ️</div><div class="settings-row-text">WieBewaartWat v2.1 — Saarloos</div></div></div>
+      <div class="settings-row"><div class="settings-row-left"><div class="settings-row-icon">ℹ️</div><div class="settings-row-text">WieBewaartWat v2.1 — Saarloosjes</div></div></div>
     </div>`;
 }
 window.toggleDataSec=function(){
